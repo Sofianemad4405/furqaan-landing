@@ -1,2 +1,711 @@
-<h1>Furqan App</h1>
-<p>Coming soon.</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlFurqan - Your Complete Quran Companion</title>
+    <meta name="description" content="Read, track, and deepen your connection with the Quran. AlFurqan creates a beautiful, distraction-free environment for your spiritual journey.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #0F3D2E;
+            --secondary: #C9A227;
+            --background: #FAFAF7;
+            --surface: #FFFFFF;
+            --text-main: #222222;
+            --text-muted: #666666;
+            --border: #E5E5E0;
+            --shadow-sm: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+            --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.08);
+            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--background);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Utilities */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0a291f;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-black {
+            background-color: #000;
+            color: white;
+            border-radius: 12px;
+            padding: 10px 20px;
+            min-width: 160px;
+        }
+        
+        .btn-black:hover {
+            opacity: 0.8;
+            transform: translateY(-2px);
+        }
+
+        /* Decorative Background Pattern (Geometric) */
+        .bg-pattern {
+            background-image: radial-gradient(var(--secondary) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.05;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Header */
+        header {
+            padding: 24px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            background: rgba(250, 250, 247, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+
+        .logo img {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+        }
+
+        .nav-links {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .nav-links {
+                display: flex;
+                gap: 32px;
+                font-size: 0.95rem;
+                color: var(--text-main);
+            }
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 160px 0 100px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        @media (min-width: 992px) {
+            .hero-layout {
+                grid-template-columns: 1.1fr 0.9fr;
+            }
+        }
+
+        .hero-content {
+            max-width: 600px;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            background: rgba(201, 162, 39, 0.1);
+            color: var(--secondary);
+            border-radius: 100px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            letter-spacing: 0.5px;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            line-height: 1.2;
+            margin-bottom: 24px;
+        }
+
+        @media (min-width: 768px) {
+            .hero h1 {
+                font-size: 4rem;
+            }
+        }
+
+        .hero p {
+            font-size: 1.125rem;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+
+        .store-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .hero-image {
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Phone Frame CSS */
+        .phone-frame {
+            width: 300px;
+            height: 600px;
+            background: #000;
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            position: relative;
+            transform: rotate(-5deg);
+            transition: transform 0.5s ease;
+        }
+        
+        .phone-frame:hover {
+            transform: rotate(0deg);
+        }
+
+        .phone-content {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            border-radius: 28px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .phone-content img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 0;
+            background: #fff;
+            position: relative;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 80px;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+            color: var(--primary);
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+        }
+
+        .feature-card {
+            padding: 32px;
+            border-radius: 24px;
+            background: var(--background);
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            background: #fff;
+            box-shadow: var(--shadow-lg);
+            border-color: var(--border);
+        }
+
+        .icon-box {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: rgba(15, 61, 46, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            color: var(--primary);
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 12px;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Journey Section */
+        .journey {
+            padding: 100px 0;
+            background: linear-gradient(135deg, #0F3D2E 0%, #1a4f3d 100%);
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .journey-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .journey h2 {
+            color: white;
+            margin-bottom: 24px;
+        }
+
+        .journey p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+
+        .journey-divider {
+            height: 2px;
+            width: 80px;
+            background: var(--secondary);
+            margin: 0 auto 40px;
+        }
+
+        .journey-mockup {
+            max-width: 500px;
+            border-radius: 20px;
+            margin: 40px auto 0;
+            box-shadow: var(--shadow-xl);
+            display: block;
+            width: 100%;
+        }
+
+        /* Screenshots */
+        .screenshots {
+            padding: 100px 0;
+            overflow: hidden;
+        }
+        
+        .screenshot-reel {
+            display: flex;
+            gap: 30px;
+            padding: 40px 24px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none; /* Firefox */
+        }
+        
+        .screenshot-reel::-webkit-scrollbar {
+            display: none; /* Chrome/Safari */
+        }
+
+        .screen-item {
+            flex: 0 0 280px;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            scroll-snap-align: center;
+            border: 4px solid #fff;
+            transition: transform 0.3s ease;
+        }
+        
+        .screen-item:hover {
+            transform: scale(1.02);
+            z-index: 10;
+        }
+
+        .screen-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Download Section */
+        .download-cta {
+            padding: 100px 0;
+            text-align: center;
+            background-color: var(--background);
+            position: relative;
+        }
+
+        .download-cta h2 {
+            margin-bottom: 40px;
+        }
+
+        /* Footer */
+        footer {
+            padding: 60px 0 30px;
+            border-top: 1px solid var(--border);
+            background: #fff;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 32px;
+            margin-bottom: 40px;
+        }
+
+        .footer-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 32px;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        .copyright {
+            text-align: center;
+            color: #999;
+            font-size: 0.85rem;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Icons */
+        .icon-svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="bg-pattern"></div>
+
+    <header>
+        <div class="container nav-content">
+            <a href="#" class="logo">
+                <img src="assets/images/app_icon.png" alt="AlFurqan Logo">
+                AlFurqan
+            </a>
+            <nav class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#journey">Journey</a>
+                <a href="#download">Download</a>
+            </nav>
+            <a href="#download" class="btn btn-primary" style="padding: 8px 20px; font-size: 0.9rem;">
+                Get App
+            </a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container hero-layout">
+            <div class="hero-content">
+                <span class="hero-badge">Ramadan Ready 2026</span>
+                <h1>Your Complete Quran Companion</h1>
+                <p>Read, track, and deepen your connection with the Book of Allah. Designed for focus, clarity, and spiritual consistency.</p>
+                
+                <div class="store-buttons">
+                    <a href="#" class="btn btn-black">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" style="margin-right: 8px;">
+                            <path d="M17.65 1.56c-1.37 0-3.66 1.13-4.8 2.45-1.04 1.2-1.95 3.32-1.03 5.3 2.11-.12 4.1-1.35 5.23-2.6 1.09-1.22 1.83-3.26.6-5.15zM16.96 7.6c1.19 0 3.37.15 4.54 1.9-3.87 2.15-2.73 7.02.66 8.52-1.26 2.66-2.91 4.79-4.87 4.79-1.39 0-1.93-.93-3.79-.93-1.89 0-2.48.91-3.79.91-2.07 0-4.32-2.9-5.74-6.66-2.5-6.6 1.48-10.95 5.76-10.95 1.76 0 3.1 1.26 4.14 1.26 1 0 2.66-1.57 4.76-1.57-.12 0-3.04-.3-4.14.73z"/>
+                        </svg>
+                        App Store
+                    </a>
+                    <a href="#" class="btn btn-black">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" style="margin-right: 8px;">
+                            <path d="M3.6 1.8A1.18 1.18 0 0 0 3 2.72v18.57c0 .42.23.79.57.99l10.37-10.4L3.6 1.8zm11.23 11.25l4.5 4.5c.34.33.34.9 0 1.24l-3.4 3.4-1.1-10.23 1.1 1.1zM15.93 10.9L5.56.54a.8.8 0 0 0-.58.07l10.95 10.29zm.93.94l-5.63 5.63-4.22-4.22 9.85-1.41z"/>
+                            <path d="M20.2 10.74L6.16 2.64A1.6 1.6 0 0 0 3.5 4.02v15.96a1.6 1.6 0 0 0 2.66 1.38L20.2 13.26a1.46 1.46 0 0 0 0-2.52z"/>
+                        </svg>
+                        Google Play
+                    </a>
+                </div>
+            </div>
+            
+            <div class="hero-image">
+                <div class="phone-frame">
+                    <div class="phone-content">
+                        <img src="assets/images/quran_reading.png" alt="Quran Reading Screen">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>Designed for Your Spiritual Growth</h2>
+                <p>Everything you need to maintain your relationship with the Quran, in one beautiful place.</p>
+            </div>
+
+            <div class="features-grid">
+                <!-- Feature 1 -->
+                <div class="feature-card">
+                    <div class="icon-box">
+                        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                        </svg>
+                    </div>
+                    <h3>Quran Reading (QCF)</h3>
+                    <p>Experience the Mushaf exactly as it is in print. High-quality Madani script pages for authentic reading.</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="feature-card">
+                    <div class="icon-box">
+                        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </div>
+                    <h3>Prayer Times & Adhan</h3>
+                    <p>Accurate prayer times calculated for your location, with beautiful visual countdowns.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="feature-card">
+                    <div class="icon-box">
+                        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                    </div>
+                    <h3>Progress Tracking</h3>
+                    <p>Track your daily reading, Khatmah progress, and build a consistent habit with gentle reminders.</p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="feature-card">
+                    <div class="icon-box">
+                        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                    </div>
+                    <h3>Bookmarks & Notes</h3>
+                    <p>Save verses that touch your heart. Add personal reflections and notes to deepen your understanding.</p>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="feature-card">
+                    <div class="icon-box">
+                        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+                        </svg>
+                    </div>
+                    <h3>Morning & Evening Azkar</h3>
+                    <p>Complete daily Wird and Azkar with an easy-to-use counter and authentic references.</p>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="feature-card">
+                    <div class="icon-box">
+                        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                    </div>
+                    <h3>Tafsir & Reflections</h3>
+                    <p>Access trusted Tafsir to understand the meanings behind the verses you read.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="journey" class="journey">
+        <div class="container journey-content">
+            <div class="journey-divider"></div>
+            <h2>A Journey of Spiritual Growth</h2>
+            <p>"The most beloved of deeds to Allah are those that are most consistent, even if it is small."</p>
+            <p style="font-size: 1rem; opacity: 0.8; max-width: 600px; margin: 0 auto;">
+                AlFurqan is more than just a reading app. It's a companion designed to help you weave the Quran into the fabric of your daily life, making every interaction meaningful.
+            </p>
+            
+            <img src="assets/images/dashboard.png" alt="Progress Dashboard" class="journey-mockup">
+        </div>
+    </section>
+
+    <section class="screenshots">
+        <div class="container">
+            <div class="section-header">
+                <h2>App Screenshots</h2>
+            </div>
+            <div class="screenshot-reel">
+                <div class="screen-item">
+                    <img src="assets/images/quran_reading.png" alt="Quran Reading">
+                </div>
+                <div class="screen-item">
+                    <img src="assets/images/dashboard.png" alt="Prayer Times">
+                </div>
+                <!-- Reusing images for the carousel effect as simplified placeholders for other screens -->
+                <div class="screen-item">
+                    <img src="assets/images/quran_reading.png" alt="Tafsir">
+                </div>
+                <div class="screen-item">
+                    <img src="assets/images/dashboard.png" alt="Settings">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="download" class="download-cta">
+        <div class="container">
+            <h2>Start Your Journey with the Quran Today</h2>
+            <div class="store-buttons" style="justify-content: center;">
+                <a href="#" class="btn btn-black">App Store</a>
+                <a href="#" class="btn btn-black">Google Play</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-logo">AlFurqan</div>
+            <div class="footer-links">
+                <a href="/privacy">Privacy Policy</a>
+                <a href="/support">Support</a>
+                <a href="/terms">Terms</a>
+            </div>
+            <p class="copyright">&copy; 2026 AlFurqan App. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'all 0.6s ease-out';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>
