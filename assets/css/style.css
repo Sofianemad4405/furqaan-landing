@@ -1957,3 +1957,183 @@ section.visible {
     top: 0;
     left: 8px;
 }
+
+/* Morphing Elements */
+.morphing-logo {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.morphing-logo:hover {
+    transform: scale(1.1) rotate(5deg);
+}
+
+@keyframes logoMorph {
+    0% {
+        transform: scale(1) rotate(0deg);
+    }
+
+    50% {
+        transform: scale(1.2) rotate(180deg);
+    }
+
+    100% {
+        transform: scale(1.1) rotate(360deg);
+    }
+}
+
+@keyframes logoMorphReverse {
+    0% {
+        transform: scale(1.1) rotate(360deg);
+    }
+
+    50% {
+        transform: scale(1.2) rotate(180deg);
+    }
+
+    100% {
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+.morphing-shapes-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.morphing-shape {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: var(--primary);
+    clip-path: circle(50%);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    opacity: 0.1;
+}
+
+.morphing-shape:nth-child(1) {
+    top: 20%;
+    right: 10%;
+}
+
+.morphing-shape:nth-child(2) {
+    top: 60%;
+    left: 15%;
+}
+
+.morphing-shape:nth-child(3) {
+    bottom: 20%;
+    right: 20%;
+}
+
+/* Liquid Button Effects */
+.liquid-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.liquid-blob {
+    animation: liquidSpread 0.6s ease-out forwards;
+}
+
+.liquid-ripple {
+    animation: liquidRipple 0.4s ease-out forwards;
+}
+
+@keyframes liquidSpread {
+    0% {
+        width: 0;
+        height: 0;
+        opacity: 1;
+    }
+
+    100% {
+        width: 200px;
+        height: 200px;
+        opacity: 0;
+    }
+}
+
+@keyframes liquidRipple {
+    0% {
+        width: 0;
+        height: 0;
+        opacity: 0.5;
+    }
+
+    100% {
+        width: 100px;
+        height: 100px;
+        opacity: 0;
+    }
+}
+
+/* Advanced Hover States */
+.hover-active {
+    z-index: 10;
+}
+
+.hover-particle {
+    animation: particleFloat 0.8s ease-out forwards;
+}
+
+@keyframes particleFloat {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-20px) scale(0);
+        opacity: 0;
+    }
+}
+
+@keyframes hoverExit {
+    0% {
+        transform: scale(1.02);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: none;
+    }
+}
+
+/* Enhanced button hover states */
+.btn:hover,
+.store-btn:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(10, 92, 62, 0.3);
+}
+
+.btn:active,
+.store-btn:active {
+    transform: translateY(0) scale(0.98);
+    transition: transform 0.1s ease;
+}
+
+/* Feature card advanced hover */
+.feature-card:hover {
+    transform: translateY(-15px) rotateX(5deg) rotateY(2deg);
+    box-shadow:
+        0 25px 50px rgba(0, 0, 0, 0.15),
+        0 0 30px rgba(10, 92, 62, 0.1);
+}
+
+.feature-card:hover .icon-box {
+    transform: scale(1.2) rotate(10deg);
+    box-shadow: 0 10px 20px rgba(10, 92, 62, 0.2);
+}
+
+/* Logo advanced hover */
+.logo:hover img {
+    transform: scale(1.1) rotate(5deg);
+    filter: drop-shadow(0 5px 10px rgba(10, 92, 62, 0.3));
+}

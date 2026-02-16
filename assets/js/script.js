@@ -1469,3 +1469,270 @@ if (!isMobile) { // Skip on mobile for performance
     new DynamicPatterns();
 }
 new BreathingElements();
+
+// Morphing Shapes and Advanced Animations
+class MorphingElements {
+    constructor() {
+        this.elements = [];
+        this.init();
+    }
+
+    init() {
+        this.createMorphingLogo();
+        this.createMorphingShapes();
+        this.startMorphing();
+    }
+
+    createMorphingLogo() {
+        const logo = document.querySelector('.logo img');
+        if (logo) {
+            logo.classList.add('morphing-logo');
+            logo.addEventListener('mouseenter', () => this.morphLogo(logo, true));
+            logo.addEventListener('mouseleave', () => this.morphLogo(logo, false));
+        }
+    }
+
+    createMorphingShapes() {
+        // Create morphing shape containers
+        const morphingContainer = document.createElement('div');
+        morphingContainer.className = 'morphing-shapes-container';
+        morphingContainer.innerHTML = `
+            <div class="morphing-shape shape-1"></div>
+            <div class="morphing-shape shape-2"></div>
+            <div class="morphing-shape shape-3"></div>
+        `;
+        document.body.appendChild(morphingContainer);
+
+        // Add morphing behavior to shapes
+        const shapes = document.querySelectorAll('.morphing-shape');
+        shapes.forEach((shape, index) => {
+            shape.addEventListener('mouseenter', () => this.morphShape(shape, index));
+            shape.addEventListener('mouseleave', () => this.resetShape(shape));
+        });
+    }
+
+    morphLogo(logo, isHovering) {
+        if (isHovering) {
+            logo.style.animation = 'logoMorph 0.6s ease-in-out';
+            logo.style.filter = 'hue-rotate(45deg) brightness(1.2)';
+        } else {
+            logo.style.animation = 'logoMorphReverse 0.6s ease-in-out';
+            logo.style.filter = 'none';
+        }
+    }
+
+    morphShape(shape, index) {
+        const morphs = [
+            'polygon(50% 0%, 0% 100%, 100% 100%)', // Triangle
+            'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)', // Hexagon
+            'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' // Diamond
+        ];
+
+        shape.style.clipPath = morphs[index % morphs.length];
+        shape.style.transform = 'scale(1.2) rotate(180deg)';
+        shape.style.background = `linear-gradient(45deg, hsl(${120 + index * 40}, 70%, 60%), hsl(${160 + index * 40}, 70%, 50%))`;
+    }
+
+    resetShape(shape) {
+        shape.style.clipPath = 'circle(50%)';
+        shape.style.transform = 'scale(1) rotate(0deg)';
+        shape.style.background = 'var(--primary)';
+    }
+
+    startMorphing() {
+        // Auto-morph shapes periodically
+        setInterval(() => {
+            const shapes = document.querySelectorAll('.morphing-shape');
+            shapes.forEach((shape, index) => {
+                if (!shape.matches(':hover')) {
+                    setTimeout(() => {
+                        this.morphShape(shape, (index + Math.floor(Date.now() / 3000)) % 3);
+                        setTimeout(() => {
+                            if (!shape.matches(':hover')) {
+                                this.resetShape(shape);
+                            }
+                        }, 1000);
+                    }, index * 200);
+                }
+            });
+        }, 5000);
+    }
+}
+
+// Liquid Button Effects
+class LiquidButtons {
+    constructor() {
+        this.buttons = document.querySelectorAll('.btn, .store-btn');
+        this.init();
+    }
+
+    init() {
+        this.buttons.forEach(button => {
+            button.classList.add('liquid-btn');
+            this.addLiquidEffect(button);
+        });
+    }
+
+    addLiquidEffect(button) {
+        button.addEventListener('mouseenter', (e) => this.createLiquidEffect(e, button));
+        button.addEventListener('mouseleave', () => this.removeLiquidEffect(button));
+    }
+
+    createLiquidEffect(e, button) {
+        const rect = button.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        // Create liquid blob effect
+        const liquidBlob = document.createElement('div');
+        liquidBlob.className = 'liquid-blob';
+        liquidBlob.style.cssText = `
+            position: absolute;
+            top: ${y}px;
+            left: ${x}px;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+            animation: liquidSpread 0.6s ease-out forwards;
+        `;
+
+        button.appendChild(liquidBlob);
+
+        // Remove after animation
+        setTimeout(() => {
+            if (liquidBlob.parentNode) {
+                liquidBlob.remove();
+            }
+        }, 600);
+    }
+
+    removeLiquidEffect(button) {
+        // Add a subtle ripple effect on mouse leave
+        const ripple = document.createElement('div');
+        ripple.className = 'liquid-ripple';
+        ripple.style.cssText = `
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 1;
+            animation: liquidRipple 0.4s ease-out forwards;
+        `;
+
+        button.appendChild(ripple);
+
+        setTimeout(() => {
+            if (ripple.parentNode) {
+                ripple.remove();
+            }
+        }, 400);
+    }
+}
+
+// Advanced Hover States with Micro-interactions
+class AdvancedHoverStates {
+    constructor() {
+        this.elements = [];
+        this.init();
+    }
+
+    init() {
+        this.findInteractiveElements();
+        this.bindHoverEvents();
+    }
+
+    findInteractiveElements() {
+        this.elements = document.querySelectorAll('.btn, .store-btn, .feature-card, .icon-box, .logo');
+    }
+
+    bindHoverEvents() {
+        this.elements.forEach(element => {
+            element.addEventListener('mouseenter', (e) => this.handleMouseEnter(e, element));
+            element.addEventListener('mouseleave', (e) => this.handleMouseLeave(e, element));
+            element.addEventListener('mousemove', (e) => this.handleMouseMove(e, element));
+        });
+    }
+
+    handleMouseEnter(e, element) {
+        // Add micro-interaction classes
+        element.classList.add('hover-active');
+
+        // Create floating particles effect
+        this.createFloatingParticles(e, element);
+
+        // Add subtle sound effect (if supported)
+        if ('vibrate' in navigator && isMobile) {
+            navigator.vibrate(10);
+        }
+    }
+
+    handleMouseLeave(e, element) {
+        element.classList.remove('hover-active');
+
+        // Add exit animation
+        element.style.animation = 'hoverExit 0.3s ease-out';
+        setTimeout(() => {
+            element.style.animation = '';
+        }, 300);
+    }
+
+    handleMouseMove(e, element) {
+        if (element.classList.contains('hover-active')) {
+            const rect = element.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+
+            // Subtle 3D tilt effect
+            const tiltX = y * 0.01;
+            const tiltY = -x * 0.01;
+
+            element.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.02)`;
+        }
+    }
+
+    createFloatingParticles(e, element) {
+        if (isMobile) return; // Skip on mobile for performance
+
+        const rect = element.getBoundingClientRect();
+        const particleCount = 3;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'hover-particle';
+            particle.style.cssText = `
+                position: absolute;
+                top: ${e.clientY - rect.top}px;
+                left: ${e.clientX - rect.left}px;
+                width: 4px;
+                height: 4px;
+                background: var(--secondary);
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 1000;
+                animation: particleFloat 0.8s ease-out forwards;
+                animation-delay: ${i * 0.1}s;
+            `;
+
+            element.appendChild(particle);
+
+            setTimeout(() => {
+                if (particle.parentNode) {
+                    particle.remove();
+                }
+            }, 800);
+        }
+    }
+}
+
+// Initialize morphing and advanced effects
+new MorphingElements();
+new LiquidButtons();
+new AdvancedHoverStates();
