@@ -237,7 +237,7 @@ select:focus-visible {
 }
 
 html {
-    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
 }
 
 body {
@@ -506,33 +506,48 @@ header.scrolled {
     left: 0;
     width: 100%;
     height: 100vh;
+    height: 100dvh;
     background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     z-index: 1001;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 32px;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.4s ease;
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform;
 }
 
 [data-theme="dark"] .mobile-menu {
     background: rgba(15, 23, 42, 0.98);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
 }
 
 .mobile-menu.active {
-    opacity: 1;
-    visibility: visible;
+    transform: translateX(0);
 }
 
 .mobile-menu a {
     font-size: 1.5rem;
     font-weight: 600;
     color: var(--text-main);
+    padding: 12px 24px;
+    border-radius: 12px;
+    transition: background 0.2s ease;
+    width: 80%;
+    text-align: center;
+}
+
+.mobile-menu a:hover,
+.mobile-menu a:active {
+    background: rgba(10, 92, 62, 0.08);
+}
+
+[data-theme="dark"] .mobile-menu a:hover,
+[data-theme="dark"] .mobile-menu a:active {
+    background: rgba(52, 211, 153, 0.08);
 }
 
 /* Hero Section */
@@ -551,6 +566,32 @@ header.scrolled {
     grid-template-columns: 1fr;
     gap: 60px;
     align-items: center;
+}
+
+/* Hero decorative blobs */
+.blob {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.blob-1 {
+    width: 400px;
+    height: 400px;
+    left: -120px;
+    top: -100px;
+    background: rgba(201, 162, 39, 0.08);
+    filter: blur(80px);
+}
+
+.blob-2 {
+    width: 300px;
+    height: 300px;
+    right: -80px;
+    bottom: -80px;
+    background: rgba(16, 185, 129, 0.06);
+    filter: blur(80px);
 }
 
 @media (min-width: 992px) {
@@ -584,23 +625,21 @@ header.scrolled {
 }
 
 .hero h1 {
-    font-size: 4rem;
-    line-height: 1.1;
+    font-size: clamp(2rem, 6vw, 5rem);
+    line-height: 1.2;
     margin-bottom: 24px;
     background: var(--gradient-primary);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-}
-
-@media (min-width: 768px) {
-    .hero h1 {
-        font-size: 5rem;
-    }
+    white-space: normal !important;
+    overflow: visible !important;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .hero p {
-    font-size: 1.35rem;
+    font-size: clamp(1rem, 2.5vw, 1.35rem);
     color: var(--text-muted);
     margin-bottom: 48px;
     font-weight: 300;
@@ -645,14 +684,14 @@ header.scrolled {
 }
 
 .section-header h2 {
-    font-size: 3rem;
+    font-size: clamp(1.5rem, 4vw, 3rem);
     margin-bottom: 16px;
 }
 
 .features-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
 }
 
 .feature-card {
@@ -748,7 +787,16 @@ header.scrolled {
 .journey h2 {
     color: #fff;
     margin-bottom: 24px;
-    font-size: 3rem;
+    font-size: clamp(1.5rem, 4vw, 3rem);
+}
+
+.journey p {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    max-width: 600px;
+    margin: 0 auto 40px;
+    line-height: 1.8;
+    font-style: italic;
 }
 
 .journey-mockup {
@@ -889,7 +937,7 @@ header.scrolled {
 }
 
 .download-banner h2 {
-    font-size: 2.8rem;
+    font-size: clamp(1.5rem, 4vw, 2.8rem);
     margin-bottom: 24px;
     color: white;
 }
@@ -918,13 +966,13 @@ header.scrolled {
     color: #fff;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
-    padding: 10px 28px;
-    min-width: 190px;
+    padding: 12px 24px;
+    min-width: 0;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 14px;
-    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    gap: 12px;
+    transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -1308,33 +1356,55 @@ header.scrolled {
         font-size: 15px;
     }
 
-    h1 {
-        font-size: 2.2rem !important;
-    }
-
     h2 {
-        font-size: 1.8rem !important;
-    }
-
-    p {
-        font-size: 1.05rem !important;
+        font-size: 1.6rem !important;
     }
 
     .hero {
-        padding: 100px 0 60px;
+        padding: 120px 0 60px;
         text-align: center;
+    }
+
+    .hero-layout {
+        gap: 30px;
+    }
+
+    .blob-1,
+    .blob-2 {
+        display: none;
+    }
+
+    .hero p {
+        margin-bottom: 32px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .store-buttons {
         flex-direction: column;
         width: 100%;
-        max-width: 340px;
+        max-width: 300px;
         margin: 0 auto;
     }
 
+    .store-btn {
+        min-width: unset;
+        width: 100%;
+        padding: 12px 20px;
+    }
+
     .phone-mockup {
-        width: 260px;
+        width: 240px;
         margin: 0 auto;
+        animation: none;
+        transform: none;
+        border-radius: 30px;
+        border-width: 6px;
+    }
+
+    .hero-image-wrapper {
+        margin-top: 20px;
+        perspective: none;
     }
 
     .features,
@@ -1342,6 +1412,18 @@ header.scrolled {
     .download-banner,
     .screenshots {
         padding: 60px 0 !important;
+    }
+
+    .section-header {
+        margin-bottom: 40px;
+    }
+
+    .section-header h2 {
+        font-size: 1.6rem !important;
+    }
+
+    .section-header p {
+        font-size: 0.95rem !important;
     }
 
     .nav-actions {
@@ -1354,18 +1436,147 @@ header.scrolled {
         margin-left: 15px;
     }
 
+    header {
+        padding: 12px 0;
+    }
+
+    header.scrolled {
+        padding: 8px 0;
+    }
+
     [data-theme="dark"] header {
         background: rgba(15, 23, 42, 0.95);
         backdrop-filter: blur(15px);
         -webkit-backdrop-filter: blur(15px);
     }
 
+    .logo {
+        font-size: 1.2rem;
+    }
+
     .logo img {
-        width: 35px;
+        width: 32px;
     }
 
     .nav-content {
-        gap: 10px;
+        gap: 8px;
+    }
+
+    .download-banner h2 {
+        font-size: 1.6rem !important;
+    }
+
+    .download-banner p {
+        font-size: 1rem !important;
+    }
+
+    .journey h2 {
+        font-size: 1.6rem !important;
+    }
+
+    .journey-mockup {
+        max-width: 260px;
+        border-radius: 24px;
+    }
+
+    .journey p {
+        font-size: 1rem;
+        margin-bottom: 30px;
+        padding: 0 8px;
+    }
+
+    .journey-content {
+        padding: 0 16px;
+    }
+
+    .store-title {
+        font-size: 1.1rem;
+    }
+
+    .feature-card {
+        border-radius: 20px;
+    }
+
+    /* Disable 3D hover on mobile - touch doesn't have precise hover */
+    .feature-card:hover {
+        transform: translateY(-4px) !important;
+    }
+
+    .feature-card:hover .icon-box {
+        transform: scale(1.05) !important;
+    }
+
+    /* Hide dynamic patterns on mobile for performance */
+    .dynamic-pattern {
+        display: none !important;
+    }
+
+    .morphing-shapes-container {
+        display: none !important;
+    }
+
+    /* Better footer on mobile */
+    .footer-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 16px;
+    }
+
+    .footer-content {
+        padding: 0 16px;
+    }
+
+    .main-footer {
+        padding: 40px 0 24px;
+    }
+
+    .carousel-container {
+        padding: 20px 0;
+    }
+
+    .screen-item {
+        flex: 0 0 200px;
+        border-radius: 20px;
+        border-width: 4px;
+    }
+
+    .carousel-track {
+        gap: 20px;
+    }
+
+    /* Back to top button */
+    #back-to-top {
+        bottom: 20px;
+        left: 20px;
+        width: 42px;
+        height: 42px;
+    }
+
+    /* Islamic decorations: reduce on mobile */
+    .islamic-decor::before,
+    .islamic-decor::after {
+        display: none;
+    }
+
+    .islamic-divider {
+        margin: 20px 0;
+        height: 24px;
+    }
+
+    /* Hero badge */
+    .hero-badge {
+        font-size: 0.85rem;
+        padding: 8px 16px;
+        margin-bottom: 20px;
+    }
+
+    /* Download section */
+    .download-eyebrow {
+        font-size: 0.8rem;
+    }
+
+    .download-content {
+        padding: 0 16px;
     }
 }
 
@@ -1449,106 +1660,33 @@ header.scrolled {
     .store-btn {
         min-height: 44px;
         min-width: 44px;
-        padding: 12px 16px;
-    }
-
-    /* Better spacing for touch */
-    .nav-links a,
-    .mobile-menu a {
-        padding: 16px 20px;
-        margin: 4px 0;
-    }
-
-    /* Improved mobile navigation */
-    .mobile-menu {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100vh;
-        background: var(--surface);
-        z-index: 999;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        transform: translateX(100%);
-        transition: transform 0.3s ease;
-    }
-
-    .mobile-menu.active {
-        transform: translateX(0);
-    }
-
-    .mobile-menu a {
-        font-size: 1.2rem;
-        margin: 10px 0;
-        width: 80%;
-        text-align: center;
-        border-radius: 8px;
-    }
-
-    /* Mobile-optimized hero */
-    .hero {
-        padding: 80px 0 40px;
-        text-align: center;
-    }
-
-    .hero-content {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .hero-text {
-        margin-bottom: 40px;
-    }
-
-    .hero-image-wrapper {
-        order: -1;
-        margin-bottom: 30px;
     }
 
     /* Mobile-optimized features */
     .features-grid {
         grid-template-columns: 1fr;
-        gap: 30px;
+        gap: 20px;
     }
 
     .feature-card {
-        padding: 30px 20px;
+        padding: 24px 20px;
         text-align: center;
     }
 
-    /* Better mobile typography */
-    h1 {
-        font-size: 2.2rem;
-        line-height: 1.2;
+    .feature-card h3 {
+        font-size: 1.2rem;
     }
 
-    h2 {
-        font-size: 1.8rem;
-    }
-
-    h3 {
-        font-size: 1.4rem;
-    }
-
-    /* Mobile-optimized buttons */
-    .store-buttons {
-        flex-direction: column;
-        gap: 16px;
-    }
-
-    .store-btn {
-        width: 100%;
-        justify-content: center;
+    .feature-card p {
+        font-size: 0.9rem !important;
     }
 
     /* Touch feedback */
     button:active,
     .btn:active,
     .store-btn:active {
-        transform: scale(0.98);
+        transform: scale(0.97) !important;
+        transition: transform 0.1s ease !important;
     }
 
     /* Mobile-optimized forms (if any) */
@@ -1628,14 +1766,29 @@ header.scrolled {
 
 /* Smooth Section Transitions with Fade Effects */
 section {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-section.visible {
     opacity: 1;
     transform: translateY(0);
+}
+
+/* Only animate sections when JS is ready - progressive enhancement */
+.js-loaded section:not(.visible) {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.js-loaded section.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* On mobile: faster transitions, smaller slide distance, and safety timeout */
+@media (max-width: 768px) {
+    .js-loaded section:not(.visible) {
+        transform: translateY(15px);
+        transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+    }
 }
 
 /* Staggered animation delays for feature cards */
@@ -1869,12 +2022,21 @@ section.visible {
     transition: transform 0.1s ease-out;
 }
 
-/* Preserve 3D transforms for better performance */
-.feature-card,
-.phone-mockup,
-.section-header h2 {
-    transform-style: preserve-3d;
-    backface-visibility: hidden;
+/* Preserve 3D transforms for better performance - desktop only */
+@media (hover: hover) {
+
+    .feature-card,
+    .section-header h2 {
+        transform-style: preserve-3d;
+        backface-visibility: hidden;
+    }
+}
+
+/* Hide heavy canvas on mobile */
+@media (max-width: 768px) {
+    #hero-canvas {
+        display: none !important;
+    }
 }
 
 /* Interactive Background Effects */
@@ -2106,36 +2268,39 @@ section.visible {
     }
 }
 
-/* Enhanced button hover states */
-.btn:hover,
-.store-btn:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 15px 35px rgba(10, 92, 62, 0.3);
-}
+/* Enhanced button hover states - desktop only */
+@media (hover: hover) {
 
-.btn:active,
-.store-btn:active {
-    transform: translateY(0) scale(0.98);
-    transition: transform 0.1s ease;
-}
+    .btn:hover,
+    .store-btn:hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 15px 35px rgba(10, 92, 62, 0.3);
+    }
 
-/* Feature card advanced hover */
-.feature-card:hover {
-    transform: translateY(-15px) rotateX(5deg) rotateY(2deg);
-    box-shadow:
-        0 25px 50px rgba(0, 0, 0, 0.15),
-        0 0 30px rgba(10, 92, 62, 0.1);
-}
+    .btn:active,
+    .store-btn:active {
+        transform: translateY(0) scale(0.98);
+        transition: transform 0.1s ease;
+    }
 
-.feature-card:hover .icon-box {
-    transform: scale(1.2) rotate(10deg);
-    box-shadow: 0 10px 20px rgba(10, 92, 62, 0.2);
-}
+    /* Feature card advanced hover */
+    .feature-card:hover {
+        transform: translateY(-8px);
+        box-shadow:
+            0 25px 50px rgba(0, 0, 0, 0.12),
+            0 0 20px rgba(10, 92, 62, 0.08);
+    }
 
-/* Logo advanced hover */
-.logo:hover img {
-    transform: scale(1.1) rotate(5deg);
-    filter: drop-shadow(0 5px 10px rgba(10, 92, 62, 0.3));
+    .feature-card:hover .icon-box {
+        transform: scale(1.15) rotate(5deg);
+        box-shadow: 0 8px 16px rgba(10, 92, 62, 0.15);
+    }
+
+    /* Logo advanced hover */
+    .logo:hover img {
+        transform: scale(1.05);
+        filter: drop-shadow(0 3px 6px rgba(10, 92, 62, 0.2));
+    }
 }
 
 /* Advanced Gesture Support */

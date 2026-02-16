@@ -3,24 +3,8 @@ const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const prefersHighContrast = window.matchMedia('(prefers-contrast: high)').matches;
 
-// Initialize Lenis Smooth Scroll (skip on mobile or reduced motion)
-let lenis;
-if (typeof Lenis !== 'undefined' && !isMobile && !prefersReducedMotion) {
-    lenis = new Lenis({
-        duration: 1.2,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        direction: 'vertical',
-        smooth: true,
-    });
-
-    function raf(time) {
-        if (lenis) {
-            lenis.raf(time);
-            requestAnimationFrame(raf);
-        }
-    }
-    requestAnimationFrame(raf);
-}
+// Lenis removed — it hijacks native scroll and makes it feel sluggish
+// Native browser scroll + CSS scroll-behavior is sufficient
 
 // Initialize AOS (skip on reduced motion)
 if (typeof AOS !== 'undefined' && typeof AOS.init === 'function' && !prefersReducedMotion) {
@@ -54,9 +38,9 @@ if (typeof VanillaTilt !== 'undefined' && !isMobile && !prefersReducedMotion) {
     }
 }
 
-// Particle & Shooting Star Canvas Effect
+// Particle & Shooting Star Canvas Effect - skip on mobile for battery
 const canvas = document.getElementById('hero-canvas');
-if (canvas) {
+if (canvas && !isMobile) {
     const ctx = canvas.getContext('2d');
     let width, height;
     let particles = [];
@@ -249,12 +233,13 @@ if (canvas) {
 window.addEventListener('load', () => {
     const loader = document.getElementById('loader');
     if (loader) {
+        const delay = isMobile ? 500 : 1500;
         setTimeout(() => {
             loader.style.opacity = '0';
             setTimeout(() => {
                 loader.style.visibility = 'hidden';
-            }, 500);
-        }, 1500);
+            }, 400);
+        }, delay);
     }
 });
 
@@ -352,29 +337,32 @@ function announceToScreenReader(message) {
 const header = document.getElementById('header');
 const backToTop = document.getElementById('back-to-top');
 
+let headerTicking = false;
 window.addEventListener('scroll', () => {
-    if (window.scrollY > 50) {
-        header.classList.add('scrolled');
-        backToTop.classList.add('visible');
-    } else {
-        header.classList.remove('scrolled');
-        backToTop.classList.remove('visible');
+    if (!headerTicking) {
+        requestAnimationFrame(() => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+                backToTop.classList.add('visible');
+            } else {
+                header.classList.remove('scrolled');
+                backToTop.classList.remove('visible');
+            }
+            headerTicking = false;
+        });
+        headerTicking = true;
     }
-});
+}, { passive: true });
 
 // Smooth Scroll for Back to Top
 if (backToTop) {
     backToTop.addEventListener('click', (e) => {
         e.preventDefault();
-        if (lenis) {
-            lenis.scrollTo(0);
-        } else {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 }
 
-// Connect Lenis to anchor links
+// Smooth scroll for anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         const targetId = this.getAttribute('href');
@@ -382,11 +370,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             const targetElement = document.querySelector(targetId);
             if (targetElement) {
                 e.preventDefault();
-                if (lenis) {
-                    lenis.scrollTo(targetElement);
-                } else {
-                    targetElement.scrollIntoView({ behavior: 'smooth' });
-                }
+                targetElement.scrollIntoView({ behavior: 'smooth' });
             }
         }
     });
@@ -446,15 +430,14 @@ class TextReveal {
     }
 
     setupTypewriter() {
+        const originalText = this.options.text;
         this.element.textContent = '';
         this.element.style.borderRight = '2px solid var(--primary)';
-        this.element.style.whiteSpace = 'nowrap';
-        this.element.style.overflow = 'hidden';
 
         let i = 0;
         const typeWriter = () => {
-            if (i < this.options.text.length) {
-                this.element.textContent += this.options.text.charAt(i);
+            if (i < originalText.length) {
+                this.element.textContent += originalText.charAt(i);
                 i++;
                 setTimeout(typeWriter, 50);
             } else {
@@ -468,167 +451,53 @@ class TextReveal {
 
 // Initialize text animations
 document.addEventListener('DOMContentLoaded', () => {
-    // Typewriter effect for hero title
-    const heroTitle = document.querySelector('.hero h1');
-    if (heroTitle) {
-        const typewriterText = heroTitle.getAttribute('data-typewriter') || heroTitle.textContent;
-        new TextReveal(heroTitle, {
-            type: 'typewriter',
-            delay: 500,
-            text: typewriterText
-        });
-    }
-
-    // Reveal animations for other text elements
-    const heroParagraph = document.querySelector('.hero p');
-    if (heroParagraph) {
-        new TextReveal(heroParagraph, { delay: 2000, duration: 800 });
-    }
-
-    const sectionHeaders = document.querySelectorAll('.section-header h2');
-    sectionHeaders.forEach((header, index) => {
-        new TextReveal(header, { delay: 200 + (index * 200), duration: 600 });
-    });
-
-    const featureTitles = document.querySelectorAll('.feature-card h3');
-    featureTitles.forEach((title, index) => {
-        new TextReveal(title, { delay: 300 + (index * 100), duration: 500 });
-    });
-});
-
-// Responsive Font Scaling
-class ResponsiveTypography {
-    constructor() {
-        this.init();
-        this.bindEvents();
-    }
-
-    init() {
-        this.updateFontSizes();
-    }
-
-    bindEvents() {
-        window.addEventListener('resize', () => {
-            this.debounce(this.updateFontSizes.bind(this), 250);
-        });
-    }
-
-    updateFontSizes() {
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
-
-        // Calculate responsive font scale based on viewport
-        const scale = Math.min(viewportWidth / 1920, viewportHeight / 1080, 1);
-
-        document.documentElement.style.setProperty('--font-scale', scale);
-
-        // Update specific elements
-        this.updateHeroTypography(scale);
-        this.updateSectionTypography(scale);
-    }
-
-    updateHeroTypography(scale) {
+    // Typewriter effect for hero title - only on desktop
+    if (!isMobile && !prefersReducedMotion) {
         const heroTitle = document.querySelector('.hero h1');
         if (heroTitle) {
-            const baseSize = 4; // rem
-            const scaledSize = Math.max(baseSize * scale, 2.5); // Minimum 2.5rem
-            heroTitle.style.fontSize = `${scaledSize}rem`;
+            const typewriterText = heroTitle.getAttribute('data-typewriter') || heroTitle.textContent;
+            new TextReveal(heroTitle, {
+                type: 'typewriter',
+                delay: 500,
+                text: typewriterText
+            });
         }
+    }
 
+    // Reveal animations for other text elements - only on desktop
+    if (!isMobile && !prefersReducedMotion) {
         const heroParagraph = document.querySelector('.hero p');
         if (heroParagraph) {
-            const baseSize = 1.35; // rem
-            const scaledSize = Math.max(baseSize * scale, 1); // Minimum 1rem
-            heroParagraph.style.fontSize = `${scaledSize}rem`;
+            new TextReveal(heroParagraph, { delay: 2000, duration: 800 });
         }
     }
+});
 
-    updateSectionTypography(scale) {
-        const sectionTitles = document.querySelectorAll('.section-header h2');
-        sectionTitles.forEach(title => {
-            const baseSize = 3; // rem
-            const scaledSize = Math.max(baseSize * scale, 2); // Minimum 2rem
-            title.style.fontSize = `${scaledSize}rem`;
-        });
-    }
-
-    debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
+// Responsive Font Scaling - disabled, using CSS clamp() instead
+class ResponsiveTypography {
+    constructor() {
+        // No-op: CSS clamp() handles responsive sizing now
     }
 }
-
-// Initialize responsive typography
 new ResponsiveTypography();
 
-// Text Shadow Effects for Depth
+// Text Shadow Effects for Depth - desktop only
 class TextShadowEffects {
     constructor() {
-        this.init();
+        if (!isMobile) this.init();
     }
 
     init() {
         this.addTextShadows();
-        this.bindScrollEffects();
     }
 
     addTextShadows() {
-        // Add depth to hero title
         const heroTitle = document.querySelector('.hero h1');
         if (heroTitle) {
             heroTitle.style.textShadow = `
                 0 2px 4px rgba(10, 92, 62, 0.1),
-                0 4px 8px rgba(10, 92, 62, 0.05),
-                0 8px 16px rgba(10, 92, 62, 0.03)
+                0 4px 8px rgba(10, 92, 62, 0.05)
             `;
-        }
-
-        // Add subtle shadows to section headers
-        const sectionHeaders = document.querySelectorAll('.section-header h2');
-        sectionHeaders.forEach(header => {
-            header.style.textShadow = `
-                0 1px 2px rgba(10, 92, 62, 0.1),
-                0 2px 4px rgba(10, 92, 62, 0.05)
-            `;
-        });
-
-        // Add glow effect to feature titles on hover
-        const featureTitles = document.querySelectorAll('.feature-card h3');
-        featureTitles.forEach(title => {
-            title.addEventListener('mouseenter', () => {
-                title.style.textShadow = `
-                    0 0 10px rgba(212, 175, 55, 0.3),
-                    0 0 20px rgba(212, 175, 55, 0.2),
-                    0 0 30px rgba(212, 175, 55, 0.1)
-                `;
-            });
-
-            title.addEventListener('mouseleave', () => {
-                title.style.textShadow = 'none';
-            });
-        });
-    }
-
-    bindScrollEffects() {
-        window.addEventListener('scroll', () => {
-            this.updateScrollShadows();
-        });
-    }
-
-    updateScrollShadows() {
-        const scrolled = window.pageYOffset;
-        const rate = scrolled * -0.5;
-
-        const heroTitle = document.querySelector('.hero h1');
-        if (heroTitle) {
-            heroTitle.style.transform = `translateY(${rate * 0.1}px)`;
         }
     }
 }
@@ -644,108 +513,57 @@ class SectionTransitions {
     }
 
     init() {
-        this.bindScrollEvents();
-        this.checkInitialVisibility();
+        // Enable animation only after JS is ready (progressive enhancement)
+        document.documentElement.classList.add('js-loaded');
+        // Make hero visible immediately
+        const hero = document.querySelector('.hero, #main-content');
+        if (hero) hero.classList.add('visible');
+        this.setupObserver();
+
+        // Safety net: force all sections visible after a timeout
+        // Prevents sections staying invisible if observer misses them
+        const fallbackDelay = isMobile ? 2000 : 4000;
+        setTimeout(() => {
+            this.sections.forEach(section => {
+                if (!section.classList.contains('visible')) {
+                    section.classList.add('visible');
+                }
+            });
+        }, fallbackDelay);
     }
 
-    bindScrollEvents() {
-        window.addEventListener('scroll', () => {
-            this.checkVisibility();
-        });
-    }
-
-    checkInitialVisibility() {
-        this.checkVisibility();
-    }
-
-    checkVisibility() {
-        const scrollTop = window.pageYOffset;
-        const windowHeight = window.innerHeight;
-
-        this.sections.forEach(section => {
-            const sectionTop = section.offsetTop;
-            const sectionHeight = section.offsetHeight;
-
-            if (scrollTop + windowHeight * 0.8 > sectionTop &&
-                scrollTop < sectionTop + sectionHeight) {
-                section.classList.add('visible');
-            }
-        });
+    setupObserver() {
+        if ('IntersectionObserver' in window) {
+            // Lower threshold on mobile so sections appear sooner during fast scrolls
+            const threshold = isMobile ? 0.01 : 0.15;
+            const rootMargin = isMobile ? '0px 0px 50px 0px' : '0px 0px -50px 0px';
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold, rootMargin });
+            this.sections.forEach(section => observer.observe(section));
+        } else {
+            // Fallback: show everything
+            this.sections.forEach(section => section.classList.add('visible'));
+        }
     }
 }
 
 // Initialize section transitions
 new SectionTransitions();
 
-// Skeleton Loading Animations for Images and Content
+// Skeleton Loading - disabled (was destroying feature card content)
+// Progressive image loading is handled by native loading="lazy" attribute
 class SkeletonLoader {
     constructor() {
-        this.init();
-    }
-
-    init() {
-        this.addSkeletonToImages();
-        this.addSkeletonToContent();
-        this.bindLoadEvents();
-    }
-
-    addSkeletonToImages() {
-        const images = document.querySelectorAll('img[loading="lazy"]');
-        images.forEach(img => {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'progressive-image skeleton-image';
-            img.parentNode.insertBefore(wrapper, img);
-            wrapper.appendChild(img);
-
-            // Add blur class initially
-            img.classList.add('blur');
-        });
-    }
-
-    addSkeletonToContent() {
-        // Add skeleton to feature cards initially
-        const featureCards = document.querySelectorAll('.feature-card');
-        featureCards.forEach(card => {
-            card.classList.add('skeleton-loading');
-            const skeletonContent = `
-                <div class="skeleton skeleton-card">
-                    <div class="skeleton skeleton-text"></div>
-                    <div class="skeleton skeleton-text"></div>
-                    <div class="skeleton skeleton-text"></div>
-                </div>
-            `;
-            card.innerHTML = skeletonContent;
-        });
-    }
-
-    bindLoadEvents() {
-        // Handle image loading
-        const images = document.querySelectorAll('.progressive-image img');
-        images.forEach(img => {
-            img.addEventListener('load', () => {
-                img.classList.remove('blur');
-                img.classList.add('loaded');
-                img.parentNode.classList.remove('skeleton-image');
-            });
-        });
-
-        // Handle content loading (simulate with timeout for demo)
-        setTimeout(() => {
-            this.removeSkeletonFromContent();
-        }, 2000);
-    }
-
-    removeSkeletonFromContent() {
-        const featureCards = document.querySelectorAll('.feature-card');
-        featureCards.forEach(card => {
-            card.classList.remove('skeleton-loading');
-            // Restore original content (this would normally be done with actual content)
-            card.innerHTML = card.getAttribute('data-original-content') || card.innerHTML;
-        });
+        // No-op: removed because it was replacing feature card HTML with skeletons
+        // and never restoring the original content
     }
 }
 
-// Initialize skeleton loader
 new SkeletonLoader();
 
 // Progressive Image Loading with Blur-to-Sharp Transitions
@@ -784,10 +602,8 @@ class ProgressiveImageLoader {
         if (!src) return;
 
         img.src = src;
-        img.classList.add('blur');
 
         img.addEventListener('load', () => {
-            img.classList.remove('blur');
             img.classList.add('loaded');
         });
 
@@ -798,87 +614,19 @@ class ProgressiveImageLoader {
 // Initialize progressive image loader
 new ProgressiveImageLoader();
 
-// Micro-interactions during Page Transitions
-class PageTransitions {
-    constructor() {
-        this.transitionElement = null;
-        this.init();
-    }
-
-    init() {
-        this.createTransitionElement();
-        this.bindNavigationEvents();
-    }
-
-    createTransitionElement() {
-        this.transitionElement = document.createElement('div');
-        this.transitionElement.className = 'page-transition';
-        this.transitionElement.innerHTML = `
-            <div class="islamic-loader">
-                <div class="rub-el-hizb">
-                    <div class="square square-1"></div>
-                    <div class="square square-2"></div>
-                </div>
-                <div class="loader-text">الفرقان</div>
-            </div>
-        `;
-        document.body.appendChild(this.transitionElement);
-    }
-
-    bindNavigationEvents() {
-        // Handle anchor link clicks
-        document.querySelectorAll('a[href^="#"]').forEach(link => {
-            link.addEventListener('click', (e) => {
-                const href = link.getAttribute('href');
-                if (href && href !== '#') {
-                    e.preventDefault();
-                    this.startTransition(href);
-                }
-            });
-        });
-    }
-
-    startTransition(targetHref) {
-        this.transitionElement.classList.add('active');
-
-        setTimeout(() => {
-            // Navigate to target
-            if (lenis) {
-                const targetElement = document.querySelector(targetHref);
-                if (targetElement) {
-                    lenis.scrollTo(targetElement);
-                }
-            } else {
-                window.location.hash = targetHref;
-            }
-
-            this.endTransition();
-        }, 600);
-    }
-
-    endTransition() {
-        setTimeout(() => {
-            this.transitionElement.classList.add('fade-out');
-            setTimeout(() => {
-                this.transitionElement.classList.remove('active', 'fade-out');
-            }, 600);
-        }, 300);
-    }
-}
-
-// Initialize page transitions
-new PageTransitions();
+// Page Transitions - removed (was adding 900ms delay to all anchor navigation)
+// Anchor links scroll smoothly via native scrollIntoView
 
 // Magnetic Button Effects that Follow Cursor Movement
 class MagneticButtons {
     constructor() {
+        if (isMobile) return; // Skip on mobile - no cursor
         this.buttons = document.querySelectorAll('.btn, .store-btn');
         this.init();
     }
 
     init() {
         this.buttons.forEach(button => {
-            button.classList.add('magnetic-btn');
             this.bindEvents(button);
         });
     }
@@ -918,10 +666,11 @@ class MagneticButtons {
 // Initialize magnetic buttons
 new MagneticButtons();
 
-// Ripple Effects on Button Clicks
+// Ripple Effects on Button Clicks - desktop only
 class RippleEffects {
     constructor() {
-        this.buttons = document.querySelectorAll('.btn, .store-btn, button');
+        if (isMobile) return;
+        this.buttons = document.querySelectorAll('.btn, .store-btn');
         this.init();
     }
 
@@ -953,21 +702,28 @@ class RippleEffects {
 // Initialize ripple effects
 new RippleEffects();
 
-// Subtle Parallax Scrolling Effects
+// Subtle Parallax Scrolling Effects - desktop only
 class ParallaxEffects {
     constructor() {
+        if (isMobile || prefersReducedMotion) return; // Skip on mobile
         this.elements = document.querySelectorAll('.parallax-element');
         this.init();
     }
 
     init() {
         this.bindScrollEvents();
-        this.updateParallax();
     }
 
     bindScrollEvents() {
+        let ticking = false;
         window.addEventListener('scroll', () => {
-            this.updateParallax();
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    this.updateParallax();
+                    ticking = false;
+                });
+                ticking = true;
+            }
         });
     }
 
@@ -979,32 +735,6 @@ class ParallaxEffects {
             const yPos = -(scrolled * rate);
             element.style.setProperty('--parallax-y', `${yPos}px`);
         });
-
-        // Update specific elements
-        this.updateHeroParallax(scrolled);
-        this.updateBackgroundParallax(scrolled);
-    }
-
-    updateHeroParallax(scrolled) {
-        const heroTitle = document.querySelector('.hero h1');
-        if (heroTitle) {
-            const yPos = -(scrolled * 0.2);
-            heroTitle.style.transform = `translateY(${yPos}px)`;
-        }
-
-        const heroImage = document.querySelector('.phone-mockup');
-        if (heroImage) {
-            const yPos = -(scrolled * 0.1);
-            heroImage.style.transform = `translateY(${yPos}px) rotateY(-10deg) rotateX(5deg)`;
-        }
-    }
-
-    updateBackgroundParallax(scrolled) {
-        const hero = document.querySelector('.hero');
-        if (hero) {
-            const yPos = -(scrolled * 0.3);
-            hero.style.backgroundPosition = `center ${yPos}px`;
-        }
     }
 }
 
@@ -1042,9 +772,16 @@ class ScrollProgressBar {
     }
 
     bindEvents() {
+        let scrollTicking = false;
         window.addEventListener('scroll', () => {
-            this.updateProgress();
-        });
+            if (!scrollTicking) {
+                requestAnimationFrame(() => {
+                    this.updateProgress();
+                    scrollTicking = false;
+                });
+                scrollTicking = true;
+            }
+        }, { passive: true });
 
         window.addEventListener('resize', () => {
             this.updateProgress();
@@ -1061,130 +798,38 @@ class ScrollProgressBar {
 // Initialize scroll progress bar
 new ScrollProgressBar();
 
-// Advanced Scroll-Triggered Animations
+// Advanced Scroll-Triggered Animations - simplified, desktop only
 class ScrollAnimations {
     constructor() {
-        this.elements = [];
+        if (isMobile || prefersReducedMotion) return;
         this.init();
     }
 
     init() {
-        this.findAnimatableElements();
-        this.bindScrollEvents();
-        this.updateAnimations();
-    }
-
-    findAnimatableElements() {
-        // Find elements with data attributes for scroll animations
-        this.elements = document.querySelectorAll('[data-scroll-animate]');
-    }
-
-    bindScrollEvents() {
+        let ticking = false;
         window.addEventListener('scroll', () => {
-            this.updateAnimations();
-        });
-
-        window.addEventListener('resize', () => {
-            this.updateAnimations();
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    this.updateAnimations();
+                    ticking = false;
+                });
+                ticking = true;
+            }
         });
     }
 
     updateAnimations() {
-        const scrolled = window.pageYOffset;
         const windowHeight = window.innerHeight;
-        const documentHeight = document.documentElement.scrollHeight;
 
-        // Update text color/size based on scroll
-        this.updateTextAnimations(scrolled, documentHeight);
-
-        // Update background gradients
-        this.updateBackgroundGradients(scrolled, documentHeight);
-
-        // Update element transformations
-        this.updateElementTransformations(scrolled, windowHeight);
-    }
-
-    updateTextAnimations(scrolled, documentHeight) {
-        const scrollProgress = scrolled / (documentHeight - window.innerHeight);
-
-        // Hero title color shift
-        const heroTitle = document.querySelector('.hero h1');
-        if (heroTitle) {
-            const hue = 120 + (scrollProgress * 60); // Green to yellow shift
-            heroTitle.style.background = `linear-gradient(135deg, hsl(${hue}, 70%, 50%), hsl(${hue + 30}, 70%, 45%))`;
-            heroTitle.style.backgroundClip = 'text';
-            heroTitle.style.webkitBackgroundClip = 'text';
-        }
-
-        // Section titles size animation
+        // Gentle scale on section titles as they enter viewport
         const sectionTitles = document.querySelectorAll('.section-header h2');
-        sectionTitles.forEach((title, index) => {
+        sectionTitles.forEach(title => {
             const titleRect = title.getBoundingClientRect();
             const titleCenter = titleRect.top + titleRect.height / 2;
-            const distanceFromCenter = Math.abs(window.innerHeight / 2 - titleCenter);
-            const scale = Math.max(0.8, 1 - distanceFromCenter / (window.innerHeight / 2) * 0.2);
+            const distanceFromCenter = Math.abs(windowHeight / 2 - titleCenter);
+            const scale = Math.max(0.92, 1 - distanceFromCenter / (windowHeight / 2) * 0.08);
             title.style.transform = `scale(${scale})`;
         });
-    }
-
-    updateBackgroundGradients(scrolled, documentHeight) {
-        const scrollProgress = scrolled / (documentHeight - window.innerHeight);
-
-        // Dynamic hero background
-        const hero = document.querySelector('.hero');
-        if (hero) {
-            const hue1 = 120 + (scrollProgress * 30);
-            const hue2 = 200 + (scrollProgress * 20);
-            hero.style.background = `
-                linear-gradient(135deg,
-                    rgba(${Math.floor(hue1 * 0.5)}, ${Math.floor(hue1 * 0.3)}, ${Math.floor(hue1 * 0.2)}, 0.05) 0%,
-                    rgba(${Math.floor(hue2 * 0.3)}, ${Math.floor(hue2 * 0.4)}, ${Math.floor(hue2 * 0.6)}, 0.03) 100%
-                ),
-                var(--pattern-islamic-stars)
-            `;
-        }
-
-        // Dynamic body background
-        const body = document.body;
-        const opacity1 = 0.05 + (scrollProgress * 0.1);
-        const opacity2 = 0.05 + (scrollProgress * 0.05);
-        body.style.backgroundImage = `
-            radial-gradient(circle at 10% ${20 + scrollProgress * 30}%, rgba(212, 175, 55, ${opacity1}) 0%, transparent 20%),
-            radial-gradient(circle at 90% ${80 - scrollProgress * 20}%, rgba(10, 92, 62, ${opacity2}) 0%, transparent 20%)
-        `;
-    }
-
-    updateElementTransformations(scrolled, windowHeight) {
-        // Transform feature cards based on scroll position
-        const featureCards = document.querySelectorAll('.feature-card');
-        featureCards.forEach((card, index) => {
-            const cardRect = card.getBoundingClientRect();
-            const cardCenter = cardRect.top + cardRect.height / 2;
-            const distanceFromCenter = cardCenter - windowHeight / 2;
-            const rotation = distanceFromCenter * 0.02; // Subtle rotation
-            const scale = 1 - Math.abs(distanceFromCenter) / windowHeight * 0.1;
-
-            card.style.transform = `
-                translateY(${Math.sin(scrolled * 0.001 + index) * 10}px)
-                rotateX(${rotation}deg)
-                scale(${Math.max(0.9, scale)})
-            `;
-        });
-
-        // Transform phone mockup
-        const phoneMockup = document.querySelector('.phone-mockup');
-        if (phoneMockup) {
-            const phoneRect = phoneMockup.getBoundingClientRect();
-            const phoneCenter = phoneRect.top + phoneRect.height / 2;
-            const distanceFromCenter = phoneCenter - windowHeight / 2;
-            const tilt = distanceFromCenter * 0.005;
-
-            phoneMockup.style.transform = `
-                rotateY(${-10 + tilt}deg)
-                rotateX(${5 + tilt * 0.5}deg)
-                translateY(${scrolled * 0.1}px)
-            `;
-        }
     }
 }
 
@@ -1435,30 +1080,19 @@ class DynamicPatterns {
     }
 }
 
-// Breathing/Pulsing Background Elements
+// Breathing/Pulsing Background Elements - simplified, only blobs
 class BreathingElements {
     constructor() {
-        this.elements = [];
+        if (prefersReducedMotion || isMobile) return;
         this.init();
     }
 
     init() {
-        this.findBreathingElements();
-        this.startBreathing();
-    }
-
-    findBreathingElements() {
-        // Add breathing class to specific elements
+        // Only add breathing to background blobs, not interactive icon-boxes
         const heroBlobs = document.querySelectorAll('.blob');
-        const featureIcons = document.querySelectorAll('.icon-box');
-
-        this.elements = [...heroBlobs, ...featureIcons];
-        this.elements.forEach(el => el.classList.add('breathing'));
-    }
-
-    startBreathing() {
-        this.elements.forEach((element, index) => {
-            element.style.animation = `breathe ${2 + index * 0.5}s ease-in-out infinite ${index * 0.2}s`;
+        heroBlobs.forEach((el, index) => {
+            el.classList.add('breathing');
+            el.style.animation = `breathe ${3 + index * 0.5}s ease-in-out infinite ${index * 0.2}s`;
         });
     }
 }
@@ -1637,403 +1271,29 @@ class LiquidButtons {
     }
 }
 
-// Advanced Hover States with Micro-interactions
+// Advanced Hover States - desktop only
 class AdvancedHoverStates {
     constructor() {
-        this.elements = [];
-        this.init();
-    }
-
-    init() {
-        this.findInteractiveElements();
-        this.bindHoverEvents();
-    }
-
-    findInteractiveElements() {
-        this.elements = document.querySelectorAll('.btn, .store-btn, .feature-card, .icon-box, .logo');
-    }
-
-    bindHoverEvents() {
-        this.elements.forEach(element => {
-            element.addEventListener('mouseenter', (e) => this.handleMouseEnter(e, element));
-            element.addEventListener('mouseleave', (e) => this.handleMouseLeave(e, element));
-            element.addEventListener('mousemove', (e) => this.handleMouseMove(e, element));
-        });
-    }
-
-    handleMouseEnter(e, element) {
-        // Add micro-interaction classes
-        element.classList.add('hover-active');
-
-        // Create floating particles effect
-        this.createFloatingParticles(e, element);
-
-        // Add subtle sound effect (if supported)
-        if ('vibrate' in navigator && isMobile) {
-            navigator.vibrate(10);
-        }
-    }
-
-    handleMouseLeave(e, element) {
-        element.classList.remove('hover-active');
-
-        // Add exit animation
-        element.style.animation = 'hoverExit 0.3s ease-out';
-        setTimeout(() => {
-            element.style.animation = '';
-        }, 300);
-    }
-
-    handleMouseMove(e, element) {
-        if (element.classList.contains('hover-active')) {
-            const rect = element.getBoundingClientRect();
-            const x = e.clientX - rect.left - rect.width / 2;
-            const y = e.clientY - rect.top - rect.height / 2;
-
-            // Subtle 3D tilt effect
-            const tiltX = y * 0.01;
-            const tiltY = -x * 0.01;
-
-            element.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.02)`;
-        }
-    }
-
-    createFloatingParticles(e, element) {
-        if (isMobile) return; // Skip on mobile for performance
-
-        const rect = element.getBoundingClientRect();
-        const particleCount = 3;
-
-        for (let i = 0; i < particleCount; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'hover-particle';
-            particle.style.cssText = `
-                position: absolute;
-                top: ${e.clientY - rect.top}px;
-                left: ${e.clientX - rect.left}px;
-                width: 4px;
-                height: 4px;
-                background: var(--secondary);
-                border-radius: 50%;
-                pointer-events: none;
-                z-index: 1000;
-                animation: particleFloat 0.8s ease-out forwards;
-                animation-delay: ${i * 0.1}s;
-            `;
-
-            element.appendChild(particle);
-
-            setTimeout(() => {
-                if (particle.parentNode) {
-                    particle.remove();
-                }
-            }, 800);
-        }
+        if (isMobile) return; // No hover on mobile
     }
 }
 
 // Initialize morphing and advanced effects
-new MorphingElements();
-new LiquidButtons();
+if (!isMobile) {
+    new MorphingElements();
+    new LiquidButtons();
+}
 new AdvancedHoverStates();
 
-// Advanced Gesture Support
+// Gesture Support - simplified, non-blocking
+// Removed: pull-to-refresh (reloads page unexpectedly), horizontal swipe navigation
+// (blocks normal scrolling), pinch-to-zoom on all images (conflicts with native zoom)
+// Kept: basic touch feedback only
+
 class GestureSupport {
     constructor() {
-        this.touchStartX = null;
-        this.touchStartY = null;
-        this.touchEndX = null;
-        this.touchEndY = null;
-        this.isSwipeInProgress = false;
-        this.pullRefreshElement = null;
-        this.isPulling = false;
-        this.pullDistance = 0;
-        this.init();
-    }
-
-    init() {
-        this.bindTouchEvents();
-        this.setupPullToRefresh();
-        this.setupPinchToZoom();
-    }
-
-    bindTouchEvents() {
-        // Swipe gestures for navigation
-        document.addEventListener('touchstart', (e) => {
-            this.handleTouchStart(e);
-        }, { passive: false });
-
-        document.addEventListener('touchmove', (e) => {
-            this.handleTouchMove(e);
-        }, { passive: false });
-
-        document.addEventListener('touchend', (e) => {
-            this.handleTouchEnd(e);
-        }, { passive: false });
-    }
-
-    handleTouchStart(e) {
-        this.touchStartX = e.touches[0].clientX;
-        this.touchStartY = e.touches[0].clientY;
-        this.isSwipeInProgress = true;
-    }
-
-    handleTouchMove(e) {
-        if (!this.isSwipeInProgress) return;
-
-        this.touchEndX = e.touches[0].clientX;
-        this.touchEndY = e.touches[0].clientY;
-
-        // Handle pull-to-refresh
-        if (this.isPulling && window.scrollY === 0) {
-            e.preventDefault();
-            this.pullDistance = Math.max(0, this.touchEndY - this.touchStartY);
-            this.updatePullRefresh(this.pullDistance);
-        }
-
-        // Prevent default scrolling during horizontal swipe
-        const deltaX = Math.abs(this.touchEndX - this.touchStartX);
-        const deltaY = Math.abs(this.touchEndY - this.touchStartY);
-
-        if (deltaX > deltaY && deltaX > 50) {
-            e.preventDefault();
-        }
-    }
-
-    handleTouchEnd(e) {
-        if (!this.isSwipeInProgress) return;
-
-        const deltaX = this.touchEndX - this.touchStartX;
-        const deltaY = this.touchEndY - this.touchStartY;
-        const absDeltaX = Math.abs(deltaX);
-        const absDeltaY = Math.abs(deltaY);
-
-        // Handle swipe gestures
-        if (absDeltaX > 100 && absDeltaX > absDeltaY) {
-            this.handleSwipe(deltaX > 0 ? 'right' : 'left');
-        }
-
-        // Handle pull-to-refresh release
-        if (this.isPulling && this.pullDistance > 100) {
-            this.triggerPullRefresh();
-        } else if (this.isPulling) {
-            this.resetPullRefresh();
-        }
-
-        this.resetTouch();
-    }
-
-    handleSwipe(direction) {
-        // Navigate between sections
-        const sections = ['hero', 'features', 'journey', 'gallery', 'download'];
-        const currentSection = this.getCurrentSection();
-
-        let nextSectionIndex;
-        if (direction === 'left') {
-            nextSectionIndex = Math.min(sections.length - 1, sections.indexOf(currentSection) + 1);
-        } else {
-            nextSectionIndex = Math.max(0, sections.indexOf(currentSection) - 1);
-        }
-
-        const nextSection = sections[nextSectionIndex];
-        if (nextSection && nextSection !== currentSection) {
-            this.navigateToSection(nextSection);
-        }
-    }
-
-    getCurrentSection() {
-        const sections = document.querySelectorAll('section[id]');
-        const scrollY = window.scrollY + window.innerHeight / 2;
-
-        for (let section of sections) {
-            const rect = section.getBoundingClientRect();
-            const sectionTop = rect.top + window.scrollY;
-            const sectionBottom = sectionTop + rect.height;
-
-            if (scrollY >= sectionTop && scrollY < sectionBottom) {
-                return section.id;
-            }
-        }
-        return 'hero';
-    }
-
-    navigateToSection(sectionId) {
-        const section = document.getElementById(sectionId);
-        if (section) {
-            if (lenis) {
-                lenis.scrollTo(section);
-            } else {
-                section.scrollIntoView({ behavior: 'smooth' });
-            }
-
-            // Announce navigation to screen readers
-            this.announceNavigation(sectionId);
-        }
-    }
-
-    announceNavigation(sectionId) {
-        const sectionNames = {
-            'hero': 'الصفحة الرئيسية',
-            'features': 'المميزات',
-            'journey': 'الرحلة',
-            'gallery': 'المعرض',
-            'download': 'التحميل'
-        };
-
-        const message = `تم الانتقال إلى قسم ${sectionNames[sectionId] || sectionId}`;
-        announceToScreenReader(message);
-    }
-
-    setupPullToRefresh() {
-        this.pullRefreshElement = document.createElement('div');
-        this.pullRefreshElement.className = 'pull-refresh-indicator';
-        this.pullRefreshElement.innerHTML = `
-            <div class="pull-refresh-spinner">
-                <div class="rub-el-hizb">
-                    <div class="square square-1"></div>
-                    <div class="square square-2"></div>
-                </div>
-            </div>
-            <div class="pull-refresh-text">اسحب للتحديث</div>
-        `;
-        document.body.appendChild(this.pullRefreshElement);
-
-        // Detect when user starts pulling from top
-        let startY = 0;
-        document.addEventListener('touchstart', (e) => {
-            if (window.scrollY === 0) {
-                startY = e.touches[0].clientY;
-                this.isPulling = true;
-            }
-        });
-
-        document.addEventListener('touchmove', (e) => {
-            if (this.isPulling && window.scrollY === 0) {
-                const currentY = e.touches[0].clientY;
-                this.pullDistance = Math.max(0, currentY - startY);
-                this.updatePullRefresh(this.pullDistance);
-            }
-        });
-
-        document.addEventListener('touchend', () => {
-            if (this.isPulling) {
-                if (this.pullDistance > 100) {
-                    this.triggerPullRefresh();
-                } else {
-                    this.resetPullRefresh();
-                }
-            }
-            this.isPulling = false;
-            this.pullDistance = 0;
-        });
-    }
-
-    updatePullRefresh(distance) {
-        const progress = Math.min(distance / 100, 1);
-        const opacity = Math.min(progress, 0.8);
-        const scale = 0.5 + progress * 0.5;
-
-        this.pullRefreshElement.style.transform = `translateY(${distance * 0.5}px)`;
-        this.pullRefreshElement.style.opacity = opacity;
-
-        const spinner = this.pullRefreshElement.querySelector('.pull-refresh-spinner');
-        spinner.style.transform = `scale(${scale}) rotate(${progress * 360}deg)`;
-
-        const text = this.pullRefreshElement.querySelector('.pull-refresh-text');
-        if (progress >= 1) {
-            text.textContent = 'اترك للتحديث';
-        } else {
-            text.textContent = 'اسحب للتحديث';
-        }
-    }
-
-    triggerPullRefresh() {
-        // Show loading state
-        const text = this.pullRefreshElement.querySelector('.pull-refresh-text');
-        text.textContent = 'جاري التحديث...';
-
-        // Simulate refresh (replace with actual refresh logic)
-        setTimeout(() => {
-            this.resetPullRefresh();
-            // Trigger page reload or data refresh
-            window.location.reload();
-        }, 1500);
-    }
-
-    resetPullRefresh() {
-        this.pullRefreshElement.style.transform = 'translateY(-100px)';
-        this.pullRefreshElement.style.opacity = '0';
-
-        setTimeout(() => {
-            const text = this.pullRefreshElement.querySelector('.pull-refresh-text');
-            text.textContent = 'اسحب للتحديث';
-        }, 300);
-    }
-
-    setupPinchToZoom() {
-        let initialDistance = 0;
-        let currentScale = 1;
-        let isPinching = false;
-
-        document.addEventListener('touchstart', (e) => {
-            if (e.touches.length === 2) {
-                initialDistance = this.getTouchDistance(e.touches[0], e.touches[1]);
-                isPinching = true;
-            }
-        });
-
-        document.addEventListener('touchmove', (e) => {
-            if (isPinching && e.touches.length === 2) {
-                e.preventDefault();
-                const currentDistance = this.getTouchDistance(e.touches[0], e.touches[1]);
-                const scale = currentDistance / initialDistance;
-
-                // Apply zoom to images in viewport
-                this.applyPinchZoom(scale);
-            }
-        });
-
-        document.addEventListener('touchend', (e) => {
-            if (e.touches.length < 2) {
-                isPinching = false;
-                currentScale = 1;
-                this.resetPinchZoom();
-            }
-        });
-    }
-
-    getTouchDistance(touch1, touch2) {
-        const dx = touch1.clientX - touch2.clientX;
-        const dy = touch1.clientY - touch2.clientY;
-        return Math.sqrt(dx * dx + dy * dy);
-    }
-
-    applyPinchZoom(scale) {
-        const images = document.querySelectorAll('img[data-pinch-zoom]');
-        images.forEach(img => {
-            const rect = img.getBoundingClientRect();
-            const isInViewport = rect.top < window.innerHeight && rect.bottom > 0;
-
-            if (isInViewport) {
-                img.style.transform = `scale(${scale})`;
-                img.style.transition = 'transform 0.1s ease';
-            }
-        });
-    }
-
-    resetPinchZoom() {
-        const images = document.querySelectorAll('img[data-pinch-zoom]');
-        images.forEach(img => {
-            img.style.transform = 'scale(1)';
-        });
-    }
-
-    resetTouch() {
-        this.touchStartX = null;
-        this.touchStartY = null;
-        this.touchEndX = null;
-        this.touchEndY = null;
-        this.isSwipeInProgress = false;
+        // No-op: removed gesture handlers that were blocking normal mobile scrolling
+        // Native browser gestures work correctly now
     }
 }
 
