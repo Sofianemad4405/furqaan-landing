@@ -1060,3 +1060,982 @@ class ScrollProgressBar {
 
 // Initialize scroll progress bar
 new ScrollProgressBar();
+
+// Advanced Scroll-Triggered Animations
+class ScrollAnimations {
+    constructor() {
+        this.elements = [];
+        this.init();
+    }
+
+    init() {
+        this.findAnimatableElements();
+        this.bindScrollEvents();
+        this.updateAnimations();
+    }
+
+    findAnimatableElements() {
+        // Find elements with data attributes for scroll animations
+        this.elements = document.querySelectorAll('[data-scroll-animate]');
+    }
+
+    bindScrollEvents() {
+        window.addEventListener('scroll', () => {
+            this.updateAnimations();
+        });
+
+        window.addEventListener('resize', () => {
+            this.updateAnimations();
+        });
+    }
+
+    updateAnimations() {
+        const scrolled = window.pageYOffset;
+        const windowHeight = window.innerHeight;
+        const documentHeight = document.documentElement.scrollHeight;
+
+        // Update text color/size based on scroll
+        this.updateTextAnimations(scrolled, documentHeight);
+
+        // Update background gradients
+        this.updateBackgroundGradients(scrolled, documentHeight);
+
+        // Update element transformations
+        this.updateElementTransformations(scrolled, windowHeight);
+    }
+
+    updateTextAnimations(scrolled, documentHeight) {
+        const scrollProgress = scrolled / (documentHeight - window.innerHeight);
+
+        // Hero title color shift
+        const heroTitle = document.querySelector('.hero h1');
+        if (heroTitle) {
+            const hue = 120 + (scrollProgress * 60); // Green to yellow shift
+            heroTitle.style.background = `linear-gradient(135deg, hsl(${hue}, 70%, 50%), hsl(${hue + 30}, 70%, 45%))`;
+            heroTitle.style.backgroundClip = 'text';
+            heroTitle.style.webkitBackgroundClip = 'text';
+        }
+
+        // Section titles size animation
+        const sectionTitles = document.querySelectorAll('.section-header h2');
+        sectionTitles.forEach((title, index) => {
+            const titleRect = title.getBoundingClientRect();
+            const titleCenter = titleRect.top + titleRect.height / 2;
+            const distanceFromCenter = Math.abs(window.innerHeight / 2 - titleCenter);
+            const scale = Math.max(0.8, 1 - distanceFromCenter / (window.innerHeight / 2) * 0.2);
+            title.style.transform = `scale(${scale})`;
+        });
+    }
+
+    updateBackgroundGradients(scrolled, documentHeight) {
+        const scrollProgress = scrolled / (documentHeight - window.innerHeight);
+
+        // Dynamic hero background
+        const hero = document.querySelector('.hero');
+        if (hero) {
+            const hue1 = 120 + (scrollProgress * 30);
+            const hue2 = 200 + (scrollProgress * 20);
+            hero.style.background = `
+                linear-gradient(135deg,
+                    rgba(${Math.floor(hue1 * 0.5)}, ${Math.floor(hue1 * 0.3)}, ${Math.floor(hue1 * 0.2)}, 0.05) 0%,
+                    rgba(${Math.floor(hue2 * 0.3)}, ${Math.floor(hue2 * 0.4)}, ${Math.floor(hue2 * 0.6)}, 0.03) 100%
+                ),
+                var(--pattern-islamic-stars)
+            `;
+        }
+
+        // Dynamic body background
+        const body = document.body;
+        const opacity1 = 0.05 + (scrollProgress * 0.1);
+        const opacity2 = 0.05 + (scrollProgress * 0.05);
+        body.style.backgroundImage = `
+            radial-gradient(circle at 10% ${20 + scrollProgress * 30}%, rgba(212, 175, 55, ${opacity1}) 0%, transparent 20%),
+            radial-gradient(circle at 90% ${80 - scrollProgress * 20}%, rgba(10, 92, 62, ${opacity2}) 0%, transparent 20%)
+        `;
+    }
+
+    updateElementTransformations(scrolled, windowHeight) {
+        // Transform feature cards based on scroll position
+        const featureCards = document.querySelectorAll('.feature-card');
+        featureCards.forEach((card, index) => {
+            const cardRect = card.getBoundingClientRect();
+            const cardCenter = cardRect.top + cardRect.height / 2;
+            const distanceFromCenter = cardCenter - windowHeight / 2;
+            const rotation = distanceFromCenter * 0.02; // Subtle rotation
+            const scale = 1 - Math.abs(distanceFromCenter) / windowHeight * 0.1;
+
+            card.style.transform = `
+                translateY(${Math.sin(scrolled * 0.001 + index) * 10}px)
+                rotateX(${rotation}deg)
+                scale(${Math.max(0.9, scale)})
+            `;
+        });
+
+        // Transform phone mockup
+        const phoneMockup = document.querySelector('.phone-mockup');
+        if (phoneMockup) {
+            const phoneRect = phoneMockup.getBoundingClientRect();
+            const phoneCenter = phoneRect.top + phoneRect.height / 2;
+            const distanceFromCenter = phoneCenter - windowHeight / 2;
+            const tilt = distanceFromCenter * 0.005;
+
+            phoneMockup.style.transform = `
+                rotateY(${-10 + tilt}deg)
+                rotateX(${5 + tilt * 0.5}deg)
+                translateY(${scrolled * 0.1}px)
+            `;
+        }
+    }
+}
+
+// Initialize scroll animations
+new ScrollAnimations();
+
+// Interactive Background Effects
+class InteractiveBackground {
+    constructor() {
+        this.canvas = null;
+        this.ctx = null;
+        this.orbs = [];
+        this.mouse = { x: null, y: null };
+        this.init();
+    }
+
+    init() {
+        this.createCanvas();
+        this.createOrbs();
+        this.bindEvents();
+        this.animate();
+    }
+
+    createCanvas() {
+        this.canvas = document.createElement('canvas');
+        this.canvas.id = 'interactive-bg';
+        this.canvas.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.6;
+        `;
+        document.body.appendChild(this.canvas);
+        this.ctx = this.canvas.getContext('2d');
+        this.resize();
+    }
+
+    createOrbs() {
+        const orbCount = isMobile ? 3 : 5;
+        for (let i = 0; i < orbCount; i++) {
+            this.orbs.push({
+                x: Math.random() * this.canvas.width,
+                y: Math.random() * this.canvas.height,
+                radius: Math.random() * 100 + 50,
+                baseRadius: Math.random() * 100 + 50,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: (Math.random() - 0.5) * 0.5,
+                hue: Math.random() * 60 + 120, // Green to yellow range
+                opacity: Math.random() * 0.3 + 0.1,
+                pulsePhase: Math.random() * Math.PI * 2
+            });
+        }
+    }
+
+    bindEvents() {
+        window.addEventListener('resize', () => this.resize());
+        window.addEventListener('mousemove', (e) => {
+            this.mouse.x = e.clientX;
+            this.mouse.y = e.clientY;
+        });
+        window.addEventListener('mouseleave', () => {
+            this.mouse.x = null;
+            this.mouse.y = null;
+        });
+    }
+
+    resize() {
+        const dpr = window.devicePixelRatio || 1;
+        this.canvas.width = window.innerWidth * dpr;
+        this.canvas.height = window.innerHeight * dpr;
+        this.ctx.scale(dpr, dpr);
+        this.canvas.style.width = window.innerWidth + 'px';
+        this.canvas.style.height = window.innerHeight + 'px';
+    }
+
+    animate() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.updateOrbs();
+        this.drawOrbs();
+        requestAnimationFrame(() => this.animate());
+    }
+
+    updateOrbs() {
+        this.orbs.forEach(orb => {
+            // Breathing effect
+            orb.pulsePhase += 0.02;
+            orb.radius = orb.baseRadius + Math.sin(orb.pulsePhase) * 20;
+
+            // Mouse interaction
+            if (this.mouse.x !== null) {
+                const dx = this.mouse.x - orb.x;
+                const dy = this.mouse.y - orb.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const maxDistance = 200;
+
+                if (distance < maxDistance) {
+                    const force = (maxDistance - distance) / maxDistance;
+                    orb.vx += (dx / distance) * force * 0.01;
+                    orb.vy += (dy / distance) * force * 0.01;
+                    orb.hue += force * 2; // Color shift on interaction
+                }
+            }
+
+            // Movement
+            orb.x += orb.vx;
+            orb.y += orb.vy;
+
+            // Boundary collision
+            if (orb.x < 0 || orb.x > window.innerWidth) orb.vx *= -0.8;
+            if (orb.y < 0 || orb.y > window.innerHeight) orb.vy *= -0.8;
+
+            // Friction
+            orb.vx *= 0.99;
+            orb.vy *= 0.99;
+
+            // Keep within bounds
+            orb.x = Math.max(0, Math.min(window.innerWidth, orb.x));
+            orb.y = Math.max(0, Math.min(window.innerHeight, orb.y));
+
+            // Color cycling
+            orb.hue = (orb.hue + 0.1) % 360;
+        });
+    }
+
+    drawOrbs() {
+        this.orbs.forEach(orb => {
+            const gradient = this.ctx.createRadialGradient(
+                orb.x, orb.y, 0,
+                orb.x, orb.y, orb.radius
+            );
+
+            gradient.addColorStop(0, `hsla(${orb.hue}, 70%, 60%, ${orb.opacity})`);
+            gradient.addColorStop(0.5, `hsla(${orb.hue}, 70%, 50%, ${orb.opacity * 0.5})`);
+            gradient.addColorStop(1, `hsla(${orb.hue}, 70%, 40%, 0)`);
+
+            this.ctx.fillStyle = gradient;
+            this.ctx.beginPath();
+            this.ctx.arc(orb.x, orb.y, orb.radius, 0, Math.PI * 2);
+            this.ctx.fill();
+        });
+    }
+}
+
+// Dynamic Geometric Patterns
+class DynamicPatterns {
+    constructor() {
+        this.patterns = [];
+        this.mouse = { x: 0, y: 0 };
+        this.init();
+    }
+
+    init() {
+        this.createPatterns();
+        this.bindEvents();
+        this.animate();
+    }
+
+    createPatterns() {
+        // Create floating geometric shapes
+        const patternCount = isMobile ? 8 : 12;
+        for (let i = 0; i < patternCount; i++) {
+            this.patterns.push({
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+                size: Math.random() * 30 + 10,
+                rotation: 0,
+                rotationSpeed: (Math.random() - 0.5) * 0.02,
+                type: Math.floor(Math.random() * 4), // 0: circle, 1: square, 2: triangle, 3: star
+                opacity: Math.random() * 0.1 + 0.05,
+                hue: Math.random() * 60 + 120,
+                vx: (Math.random() - 0.5) * 0.2,
+                vy: (Math.random() - 0.5) * 0.2
+            });
+        }
+    }
+
+    bindEvents() {
+        window.addEventListener('mousemove', (e) => {
+            this.mouse.x = e.clientX;
+            this.mouse.y = e.clientY;
+        });
+
+        window.addEventListener('resize', () => {
+            this.patterns.forEach(pattern => {
+                pattern.x = Math.min(pattern.x, window.innerWidth);
+                pattern.y = Math.min(pattern.y, window.innerHeight);
+            });
+        });
+    }
+
+    animate() {
+        this.updatePatterns();
+        this.drawPatterns();
+        requestAnimationFrame(() => this.animate());
+    }
+
+    updatePatterns() {
+        this.patterns.forEach(pattern => {
+            // Rotation
+            pattern.rotation += pattern.rotationSpeed;
+
+            // Mouse interaction
+            const dx = this.mouse.x - pattern.x;
+            const dy = this.mouse.y - pattern.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < 100) {
+                const force = (100 - distance) / 100;
+                pattern.vx += (dx / distance) * force * 0.01;
+                pattern.vy += (dy / distance) * force * 0.01;
+                pattern.rotationSpeed += force * 0.001;
+            }
+
+            // Movement
+            pattern.x += pattern.vx;
+            pattern.y += pattern.vy;
+
+            // Boundary wrapping
+            if (pattern.x < -50) pattern.x = window.innerWidth + 50;
+            if (pattern.x > window.innerWidth + 50) pattern.x = -50;
+            if (pattern.y < -50) pattern.y = window.innerHeight + 50;
+            if (pattern.y > window.innerHeight + 50) pattern.y = -50;
+
+            // Friction
+            pattern.vx *= 0.995;
+            pattern.vy *= 0.995;
+            pattern.rotationSpeed *= 0.995;
+        });
+    }
+
+    drawPatterns() {
+        // We'll use CSS transforms instead of canvas for better performance
+        this.patterns.forEach((pattern, index) => {
+            const element = document.querySelector(`.dynamic-pattern-${index}`);
+            if (element) {
+                element.style.transform = `
+                    translate(${pattern.x}px, ${pattern.y}px)
+                    rotate(${pattern.rotation}rad)
+                    scale(${1 + Math.sin(Date.now() * 0.001 + index) * 0.1})
+                `;
+                element.style.opacity = pattern.opacity + Math.sin(Date.now() * 0.002 + index) * 0.05;
+            }
+        });
+    }
+}
+
+// Breathing/Pulsing Background Elements
+class BreathingElements {
+    constructor() {
+        this.elements = [];
+        this.init();
+    }
+
+    init() {
+        this.findBreathingElements();
+        this.startBreathing();
+    }
+
+    findBreathingElements() {
+        // Add breathing class to specific elements
+        const heroBlobs = document.querySelectorAll('.blob');
+        const featureIcons = document.querySelectorAll('.icon-box');
+
+        this.elements = [...heroBlobs, ...featureIcons];
+        this.elements.forEach(el => el.classList.add('breathing'));
+    }
+
+    startBreathing() {
+        this.elements.forEach((element, index) => {
+            element.style.animation = `breathe ${2 + index * 0.5}s ease-in-out infinite ${index * 0.2}s`;
+        });
+    }
+}
+
+// Initialize interactive background effects
+if (!isMobile) { // Skip on mobile for performance
+    new InteractiveBackground();
+    new DynamicPatterns();
+}
+new BreathingElements();
+
+// Morphing Shapes and Advanced Animations
+class MorphingElements {
+    constructor() {
+        this.elements = [];
+        this.init();
+    }
+
+    init() {
+        this.createMorphingLogo();
+        this.createMorphingShapes();
+        this.startMorphing();
+    }
+
+    createMorphingLogo() {
+        const logo = document.querySelector('.logo img');
+        if (logo) {
+            logo.classList.add('morphing-logo');
+            logo.addEventListener('mouseenter', () => this.morphLogo(logo, true));
+            logo.addEventListener('mouseleave', () => this.morphLogo(logo, false));
+        }
+    }
+
+    createMorphingShapes() {
+        // Create morphing shape containers
+        const morphingContainer = document.createElement('div');
+        morphingContainer.className = 'morphing-shapes-container';
+        morphingContainer.innerHTML = `
+            <div class="morphing-shape shape-1"></div>
+            <div class="morphing-shape shape-2"></div>
+            <div class="morphing-shape shape-3"></div>
+        `;
+        document.body.appendChild(morphingContainer);
+
+        // Add morphing behavior to shapes
+        const shapes = document.querySelectorAll('.morphing-shape');
+        shapes.forEach((shape, index) => {
+            shape.addEventListener('mouseenter', () => this.morphShape(shape, index));
+            shape.addEventListener('mouseleave', () => this.resetShape(shape));
+        });
+    }
+
+    morphLogo(logo, isHovering) {
+        if (isHovering) {
+            logo.style.animation = 'logoMorph 0.6s ease-in-out';
+            logo.style.filter = 'hue-rotate(45deg) brightness(1.2)';
+        } else {
+            logo.style.animation = 'logoMorphReverse 0.6s ease-in-out';
+            logo.style.filter = 'none';
+        }
+    }
+
+    morphShape(shape, index) {
+        const morphs = [
+            'polygon(50% 0%, 0% 100%, 100% 100%)', // Triangle
+            'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)', // Hexagon
+            'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' // Diamond
+        ];
+
+        shape.style.clipPath = morphs[index % morphs.length];
+        shape.style.transform = 'scale(1.2) rotate(180deg)';
+        shape.style.background = `linear-gradient(45deg, hsl(${120 + index * 40}, 70%, 60%), hsl(${160 + index * 40}, 70%, 50%))`;
+    }
+
+    resetShape(shape) {
+        shape.style.clipPath = 'circle(50%)';
+        shape.style.transform = 'scale(1) rotate(0deg)';
+        shape.style.background = 'var(--primary)';
+    }
+
+    startMorphing() {
+        // Auto-morph shapes periodically
+        setInterval(() => {
+            const shapes = document.querySelectorAll('.morphing-shape');
+            shapes.forEach((shape, index) => {
+                if (!shape.matches(':hover')) {
+                    setTimeout(() => {
+                        this.morphShape(shape, (index + Math.floor(Date.now() / 3000)) % 3);
+                        setTimeout(() => {
+                            if (!shape.matches(':hover')) {
+                                this.resetShape(shape);
+                            }
+                        }, 1000);
+                    }, index * 200);
+                }
+            });
+        }, 5000);
+    }
+}
+
+// Liquid Button Effects
+class LiquidButtons {
+    constructor() {
+        this.buttons = document.querySelectorAll('.btn, .store-btn');
+        this.init();
+    }
+
+    init() {
+        this.buttons.forEach(button => {
+            button.classList.add('liquid-btn');
+            this.addLiquidEffect(button);
+        });
+    }
+
+    addLiquidEffect(button) {
+        button.addEventListener('mouseenter', (e) => this.createLiquidEffect(e, button));
+        button.addEventListener('mouseleave', () => this.removeLiquidEffect(button));
+    }
+
+    createLiquidEffect(e, button) {
+        const rect = button.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        // Create liquid blob effect
+        const liquidBlob = document.createElement('div');
+        liquidBlob.className = 'liquid-blob';
+        liquidBlob.style.cssText = `
+            position: absolute;
+            top: ${y}px;
+            left: ${x}px;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+            animation: liquidSpread 0.6s ease-out forwards;
+        `;
+
+        button.appendChild(liquidBlob);
+
+        // Remove after animation
+        setTimeout(() => {
+            if (liquidBlob.parentNode) {
+                liquidBlob.remove();
+            }
+        }, 600);
+    }
+
+    removeLiquidEffect(button) {
+        // Add a subtle ripple effect on mouse leave
+        const ripple = document.createElement('div');
+        ripple.className = 'liquid-ripple';
+        ripple.style.cssText = `
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 1;
+            animation: liquidRipple 0.4s ease-out forwards;
+        `;
+
+        button.appendChild(ripple);
+
+        setTimeout(() => {
+            if (ripple.parentNode) {
+                ripple.remove();
+            }
+        }, 400);
+    }
+}
+
+// Advanced Hover States with Micro-interactions
+class AdvancedHoverStates {
+    constructor() {
+        this.elements = [];
+        this.init();
+    }
+
+    init() {
+        this.findInteractiveElements();
+        this.bindHoverEvents();
+    }
+
+    findInteractiveElements() {
+        this.elements = document.querySelectorAll('.btn, .store-btn, .feature-card, .icon-box, .logo');
+    }
+
+    bindHoverEvents() {
+        this.elements.forEach(element => {
+            element.addEventListener('mouseenter', (e) => this.handleMouseEnter(e, element));
+            element.addEventListener('mouseleave', (e) => this.handleMouseLeave(e, element));
+            element.addEventListener('mousemove', (e) => this.handleMouseMove(e, element));
+        });
+    }
+
+    handleMouseEnter(e, element) {
+        // Add micro-interaction classes
+        element.classList.add('hover-active');
+
+        // Create floating particles effect
+        this.createFloatingParticles(e, element);
+
+        // Add subtle sound effect (if supported)
+        if ('vibrate' in navigator && isMobile) {
+            navigator.vibrate(10);
+        }
+    }
+
+    handleMouseLeave(e, element) {
+        element.classList.remove('hover-active');
+
+        // Add exit animation
+        element.style.animation = 'hoverExit 0.3s ease-out';
+        setTimeout(() => {
+            element.style.animation = '';
+        }, 300);
+    }
+
+    handleMouseMove(e, element) {
+        if (element.classList.contains('hover-active')) {
+            const rect = element.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+
+            // Subtle 3D tilt effect
+            const tiltX = y * 0.01;
+            const tiltY = -x * 0.01;
+
+            element.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.02)`;
+        }
+    }
+
+    createFloatingParticles(e, element) {
+        if (isMobile) return; // Skip on mobile for performance
+
+        const rect = element.getBoundingClientRect();
+        const particleCount = 3;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'hover-particle';
+            particle.style.cssText = `
+                position: absolute;
+                top: ${e.clientY - rect.top}px;
+                left: ${e.clientX - rect.left}px;
+                width: 4px;
+                height: 4px;
+                background: var(--secondary);
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 1000;
+                animation: particleFloat 0.8s ease-out forwards;
+                animation-delay: ${i * 0.1}s;
+            `;
+
+            element.appendChild(particle);
+
+            setTimeout(() => {
+                if (particle.parentNode) {
+                    particle.remove();
+                }
+            }, 800);
+        }
+    }
+}
+
+// Initialize morphing and advanced effects
+new MorphingElements();
+new LiquidButtons();
+new AdvancedHoverStates();
+
+// Advanced Gesture Support
+class GestureSupport {
+    constructor() {
+        this.touchStartX = null;
+        this.touchStartY = null;
+        this.touchEndX = null;
+        this.touchEndY = null;
+        this.isSwipeInProgress = false;
+        this.pullRefreshElement = null;
+        this.isPulling = false;
+        this.pullDistance = 0;
+        this.init();
+    }
+
+    init() {
+        this.bindTouchEvents();
+        this.setupPullToRefresh();
+        this.setupPinchToZoom();
+    }
+
+    bindTouchEvents() {
+        // Swipe gestures for navigation
+        document.addEventListener('touchstart', (e) => {
+            this.handleTouchStart(e);
+        }, { passive: false });
+
+        document.addEventListener('touchmove', (e) => {
+            this.handleTouchMove(e);
+        }, { passive: false });
+
+        document.addEventListener('touchend', (e) => {
+            this.handleTouchEnd(e);
+        }, { passive: false });
+    }
+
+    handleTouchStart(e) {
+        this.touchStartX = e.touches[0].clientX;
+        this.touchStartY = e.touches[0].clientY;
+        this.isSwipeInProgress = true;
+    }
+
+    handleTouchMove(e) {
+        if (!this.isSwipeInProgress) return;
+
+        this.touchEndX = e.touches[0].clientX;
+        this.touchEndY = e.touches[0].clientY;
+
+        // Handle pull-to-refresh
+        if (this.isPulling && window.scrollY === 0) {
+            e.preventDefault();
+            this.pullDistance = Math.max(0, this.touchEndY - this.touchStartY);
+            this.updatePullRefresh(this.pullDistance);
+        }
+
+        // Prevent default scrolling during horizontal swipe
+        const deltaX = Math.abs(this.touchEndX - this.touchStartX);
+        const deltaY = Math.abs(this.touchEndY - this.touchStartY);
+
+        if (deltaX > deltaY && deltaX > 50) {
+            e.preventDefault();
+        }
+    }
+
+    handleTouchEnd(e) {
+        if (!this.isSwipeInProgress) return;
+
+        const deltaX = this.touchEndX - this.touchStartX;
+        const deltaY = this.touchEndY - this.touchStartY;
+        const absDeltaX = Math.abs(deltaX);
+        const absDeltaY = Math.abs(deltaY);
+
+        // Handle swipe gestures
+        if (absDeltaX > 100 && absDeltaX > absDeltaY) {
+            this.handleSwipe(deltaX > 0 ? 'right' : 'left');
+        }
+
+        // Handle pull-to-refresh release
+        if (this.isPulling && this.pullDistance > 100) {
+            this.triggerPullRefresh();
+        } else if (this.isPulling) {
+            this.resetPullRefresh();
+        }
+
+        this.resetTouch();
+    }
+
+    handleSwipe(direction) {
+        // Navigate between sections
+        const sections = ['hero', 'features', 'journey', 'gallery', 'download'];
+        const currentSection = this.getCurrentSection();
+
+        let nextSectionIndex;
+        if (direction === 'left') {
+            nextSectionIndex = Math.min(sections.length - 1, sections.indexOf(currentSection) + 1);
+        } else {
+            nextSectionIndex = Math.max(0, sections.indexOf(currentSection) - 1);
+        }
+
+        const nextSection = sections[nextSectionIndex];
+        if (nextSection && nextSection !== currentSection) {
+            this.navigateToSection(nextSection);
+        }
+    }
+
+    getCurrentSection() {
+        const sections = document.querySelectorAll('section[id]');
+        const scrollY = window.scrollY + window.innerHeight / 2;
+
+        for (let section of sections) {
+            const rect = section.getBoundingClientRect();
+            const sectionTop = rect.top + window.scrollY;
+            const sectionBottom = sectionTop + rect.height;
+
+            if (scrollY >= sectionTop && scrollY < sectionBottom) {
+                return section.id;
+            }
+        }
+        return 'hero';
+    }
+
+    navigateToSection(sectionId) {
+        const section = document.getElementById(sectionId);
+        if (section) {
+            if (lenis) {
+                lenis.scrollTo(section);
+            } else {
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            // Announce navigation to screen readers
+            this.announceNavigation(sectionId);
+        }
+    }
+
+    announceNavigation(sectionId) {
+        const sectionNames = {
+            'hero': 'الصفحة الرئيسية',
+            'features': 'المميزات',
+            'journey': 'الرحلة',
+            'gallery': 'المعرض',
+            'download': 'التحميل'
+        };
+
+        const message = `تم الانتقال إلى قسم ${sectionNames[sectionId] || sectionId}`;
+        announceToScreenReader(message);
+    }
+
+    setupPullToRefresh() {
+        this.pullRefreshElement = document.createElement('div');
+        this.pullRefreshElement.className = 'pull-refresh-indicator';
+        this.pullRefreshElement.innerHTML = `
+            <div class="pull-refresh-spinner">
+                <div class="rub-el-hizb">
+                    <div class="square square-1"></div>
+                    <div class="square square-2"></div>
+                </div>
+            </div>
+            <div class="pull-refresh-text">اسحب للتحديث</div>
+        `;
+        document.body.appendChild(this.pullRefreshElement);
+
+        // Detect when user starts pulling from top
+        let startY = 0;
+        document.addEventListener('touchstart', (e) => {
+            if (window.scrollY === 0) {
+                startY = e.touches[0].clientY;
+                this.isPulling = true;
+            }
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (this.isPulling && window.scrollY === 0) {
+                const currentY = e.touches[0].clientY;
+                this.pullDistance = Math.max(0, currentY - startY);
+                this.updatePullRefresh(this.pullDistance);
+            }
+        });
+
+        document.addEventListener('touchend', () => {
+            if (this.isPulling) {
+                if (this.pullDistance > 100) {
+                    this.triggerPullRefresh();
+                } else {
+                    this.resetPullRefresh();
+                }
+            }
+            this.isPulling = false;
+            this.pullDistance = 0;
+        });
+    }
+
+    updatePullRefresh(distance) {
+        const progress = Math.min(distance / 100, 1);
+        const opacity = Math.min(progress, 0.8);
+        const scale = 0.5 + progress * 0.5;
+
+        this.pullRefreshElement.style.transform = `translateY(${distance * 0.5}px)`;
+        this.pullRefreshElement.style.opacity = opacity;
+
+        const spinner = this.pullRefreshElement.querySelector('.pull-refresh-spinner');
+        spinner.style.transform = `scale(${scale}) rotate(${progress * 360}deg)`;
+
+        const text = this.pullRefreshElement.querySelector('.pull-refresh-text');
+        if (progress >= 1) {
+            text.textContent = 'اترك للتحديث';
+        } else {
+            text.textContent = 'اسحب للتحديث';
+        }
+    }
+
+    triggerPullRefresh() {
+        // Show loading state
+        const text = this.pullRefreshElement.querySelector('.pull-refresh-text');
+        text.textContent = 'جاري التحديث...';
+
+        // Simulate refresh (replace with actual refresh logic)
+        setTimeout(() => {
+            this.resetPullRefresh();
+            // Trigger page reload or data refresh
+            window.location.reload();
+        }, 1500);
+    }
+
+    resetPullRefresh() {
+        this.pullRefreshElement.style.transform = 'translateY(-100px)';
+        this.pullRefreshElement.style.opacity = '0';
+
+        setTimeout(() => {
+            const text = this.pullRefreshElement.querySelector('.pull-refresh-text');
+            text.textContent = 'اسحب للتحديث';
+        }, 300);
+    }
+
+    setupPinchToZoom() {
+        let initialDistance = 0;
+        let currentScale = 1;
+        let isPinching = false;
+
+        document.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                initialDistance = this.getTouchDistance(e.touches[0], e.touches[1]);
+                isPinching = true;
+            }
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (isPinching && e.touches.length === 2) {
+                e.preventDefault();
+                const currentDistance = this.getTouchDistance(e.touches[0], e.touches[1]);
+                const scale = currentDistance / initialDistance;
+
+                // Apply zoom to images in viewport
+                this.applyPinchZoom(scale);
+            }
+        });
+
+        document.addEventListener('touchend', (e) => {
+            if (e.touches.length < 2) {
+                isPinching = false;
+                currentScale = 1;
+                this.resetPinchZoom();
+            }
+        });
+    }
+
+    getTouchDistance(touch1, touch2) {
+        const dx = touch1.clientX - touch2.clientX;
+        const dy = touch1.clientY - touch2.clientY;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    applyPinchZoom(scale) {
+        const images = document.querySelectorAll('img[data-pinch-zoom]');
+        images.forEach(img => {
+            const rect = img.getBoundingClientRect();
+            const isInViewport = rect.top < window.innerHeight && rect.bottom > 0;
+
+            if (isInViewport) {
+                img.style.transform = `scale(${scale})`;
+                img.style.transition = 'transform 0.1s ease';
+            }
+        });
+    }
+
+    resetPinchZoom() {
+        const images = document.querySelectorAll('img[data-pinch-zoom]');
+        images.forEach(img => {
+            img.style.transform = 'scale(1)';
+        });
+    }
+
+    resetTouch() {
+        this.touchStartX = null;
+        this.touchStartY = null;
+        this.touchEndX = null;
+        this.touchEndY = null;
+        this.isSwipeInProgress = false;
+    }
+}
+
+// Initialize gesture support
+new GestureSupport();

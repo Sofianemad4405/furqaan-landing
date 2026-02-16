@@ -79,6 +79,20 @@
     <!-- Skip to main content link for accessibility -->
     <a href="#main-content" class="skip-link">تخطي إلى المحتوى الرئيسي</a>
 
+    <!-- Dynamic Pattern Elements -->
+    <div class="dynamic-pattern dynamic-pattern-0 dynamic-pattern-circle"></div>
+    <div class="dynamic-pattern dynamic-pattern-1 dynamic-pattern-square"></div>
+    <div class="dynamic-pattern dynamic-pattern-2 dynamic-pattern-triangle"></div>
+    <div class="dynamic-pattern dynamic-pattern-3 dynamic-pattern-star"></div>
+    <div class="dynamic-pattern dynamic-pattern-4 dynamic-pattern-circle"></div>
+    <div class="dynamic-pattern dynamic-pattern-5 dynamic-pattern-square"></div>
+    <div class="dynamic-pattern dynamic-pattern-6 dynamic-pattern-triangle"></div>
+    <div class="dynamic-pattern dynamic-pattern-7 dynamic-pattern-star"></div>
+    <div class="dynamic-pattern dynamic-pattern-8 dynamic-pattern-circle"></div>
+    <div class="dynamic-pattern dynamic-pattern-9 dynamic-pattern-square"></div>
+    <div class="dynamic-pattern dynamic-pattern-10 dynamic-pattern-triangle"></div>
+    <div class="dynamic-pattern dynamic-pattern-11 dynamic-pattern-star"></div>
+
     <div id="loader" role="status" aria-live="polite" aria-label="جاري تحميل التطبيق">
         <div class="islamic-loader">
             <div class="rub-el-hizb">
@@ -154,7 +168,7 @@
         </div>
     </header>
 
-    <section class="hero" id="main-content" style="position: relative;" role="main">
+    <section class="hero scroll-bg-dynamic" id="main-content" style="position: relative;" role="main">
         <canvas id="hero-canvas"
             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none;"></canvas>
         <div class="blob blob-1 parallax-element" data-parallax-rate="0.2"></div>
@@ -163,7 +177,7 @@
         <div class="container hero-layout">
             <div class="hero-content" data-aos="fade-left" data-aos-duration="1000">
                 <span class="hero-badge">جاهز لرمضان ١٤٤٧</span>
-                <h1 data-typewriter="رفيقك الكامل للقرآن الكريم">رفيقك الكامل للقرآن الكريم</h1>
+                <h1 data-typewriter="رفيقك الكامل للقرآن الكريم" class="scroll-text-scale">رفيقك الكامل للقرآن الكريم</h1>
                 <p>صُمم للتركيز والوضوح والاستمرارية الروحانية. اقرأ، تتبع، وتدبر كتاب الله في بيئة جميلة خالية من
                     المشتتات.</p>
 
@@ -193,7 +207,7 @@
 
             <div class="hero-image-wrapper" data-aos="fade-right" data-aos-duration="1200" data-aos-delay="200">
                 <div class="phone-mockup parallax-element" data-parallax-rate="0.1">
-                    <img src="assets/images/ds.jpg" alt="واجهة الفرقان" loading="lazy">
+                    <img src="assets/images/ds.jpg" alt="واجهة الفرقان" loading="lazy" data-pinch-zoom>
                 </div>
             </div>
         </div>
@@ -246,7 +260,7 @@
 
             <div class="features-grid" role="list">
                 <!-- Feature 1 -->
-                <div class="feature-card" data-aos="fade-up" data-aos-delay="100" role="listitem">
+                <div class="feature-card scroll-animate" data-aos="fade-up" data-aos-delay="100" role="listitem">
                     <div class="icon-box" aria-hidden="true">
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -259,7 +273,7 @@
                 </div>
 
                 <!-- Feature 2 -->
-                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-card scroll-animate" data-aos="fade-up" data-aos-delay="200">
                     <div class="icon-box">
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -272,7 +286,7 @@
                 </div>
 
                 <!-- Feature 3 -->
-                <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="feature-card scroll-animate" data-aos="fade-up" data-aos-delay="300">
                     <div class="icon-box">
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -310,10 +324,10 @@
         <div class="carousel-container">
             <div class="carousel-track">
                 <!-- Set 1 -->
-                <div class="screen-item"><img src="assets/images/ds.jpg" alt="Screen 1" loading="lazy"></div>
-                <div class="screen-item"><img src="assets/images/photo_2026-02-16_00-14-22.jpg" alt="Screen 2" loading="lazy"></div>
-                <div class="screen-item"><img src="assets/images/photo_2026-02-16_00-14-50.jpg" alt="Screen 3" loading="lazy"></div>
-                <div class="screen-item"><img src="assets/images/photo_2026-02-16_00-14-57.jpg" alt="Screen 4" loading="lazy"></div>
+                <div class="screen-item"><img src="assets/images/ds.jpg" alt="Screen 1" loading="lazy" data-pinch-zoom></div>
+                <div class="screen-item"><img src="assets/images/photo_2026-02-16_00-14-22.jpg" alt="Screen 2" loading="lazy" data-pinch-zoom></div>
+                <div class="screen-item"><img src="assets/images/photo_2026-02-16_00-14-50.jpg" alt="Screen 3" loading="lazy" data-pinch-zoom></div>
+                <div class="screen-item"><img src="assets/images/photo_2026-02-16_00-14-57.jpg" alt="Screen 4" loading="lazy" data-pinch-zoom></div>
 
                 <!-- Set 2 (Duplicate for infinite scroll) -->
                 <div class="screen-item"><img src="assets/images/ds.jpg" alt="Screen 1" loading="lazy"></div>
