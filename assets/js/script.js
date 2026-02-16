@@ -1190,3 +1190,282 @@ class ScrollAnimations {
 
 // Initialize scroll animations
 new ScrollAnimations();
+
+// Interactive Background Effects
+class InteractiveBackground {
+    constructor() {
+        this.canvas = null;
+        this.ctx = null;
+        this.orbs = [];
+        this.mouse = { x: null, y: null };
+        this.init();
+    }
+
+    init() {
+        this.createCanvas();
+        this.createOrbs();
+        this.bindEvents();
+        this.animate();
+    }
+
+    createCanvas() {
+        this.canvas = document.createElement('canvas');
+        this.canvas.id = 'interactive-bg';
+        this.canvas.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.6;
+        `;
+        document.body.appendChild(this.canvas);
+        this.ctx = this.canvas.getContext('2d');
+        this.resize();
+    }
+
+    createOrbs() {
+        const orbCount = isMobile ? 3 : 5;
+        for (let i = 0; i < orbCount; i++) {
+            this.orbs.push({
+                x: Math.random() * this.canvas.width,
+                y: Math.random() * this.canvas.height,
+                radius: Math.random() * 100 + 50,
+                baseRadius: Math.random() * 100 + 50,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: (Math.random() - 0.5) * 0.5,
+                hue: Math.random() * 60 + 120, // Green to yellow range
+                opacity: Math.random() * 0.3 + 0.1,
+                pulsePhase: Math.random() * Math.PI * 2
+            });
+        }
+    }
+
+    bindEvents() {
+        window.addEventListener('resize', () => this.resize());
+        window.addEventListener('mousemove', (e) => {
+            this.mouse.x = e.clientX;
+            this.mouse.y = e.clientY;
+        });
+        window.addEventListener('mouseleave', () => {
+            this.mouse.x = null;
+            this.mouse.y = null;
+        });
+    }
+
+    resize() {
+        const dpr = window.devicePixelRatio || 1;
+        this.canvas.width = window.innerWidth * dpr;
+        this.canvas.height = window.innerHeight * dpr;
+        this.ctx.scale(dpr, dpr);
+        this.canvas.style.width = window.innerWidth + 'px';
+        this.canvas.style.height = window.innerHeight + 'px';
+    }
+
+    animate() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.updateOrbs();
+        this.drawOrbs();
+        requestAnimationFrame(() => this.animate());
+    }
+
+    updateOrbs() {
+        this.orbs.forEach(orb => {
+            // Breathing effect
+            orb.pulsePhase += 0.02;
+            orb.radius = orb.baseRadius + Math.sin(orb.pulsePhase) * 20;
+
+            // Mouse interaction
+            if (this.mouse.x !== null) {
+                const dx = this.mouse.x - orb.x;
+                const dy = this.mouse.y - orb.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const maxDistance = 200;
+
+                if (distance < maxDistance) {
+                    const force = (maxDistance - distance) / maxDistance;
+                    orb.vx += (dx / distance) * force * 0.01;
+                    orb.vy += (dy / distance) * force * 0.01;
+                    orb.hue += force * 2; // Color shift on interaction
+                }
+            }
+
+            // Movement
+            orb.x += orb.vx;
+            orb.y += orb.vy;
+
+            // Boundary collision
+            if (orb.x < 0 || orb.x > window.innerWidth) orb.vx *= -0.8;
+            if (orb.y < 0 || orb.y > window.innerHeight) orb.vy *= -0.8;
+
+            // Friction
+            orb.vx *= 0.99;
+            orb.vy *= 0.99;
+
+            // Keep within bounds
+            orb.x = Math.max(0, Math.min(window.innerWidth, orb.x));
+            orb.y = Math.max(0, Math.min(window.innerHeight, orb.y));
+
+            // Color cycling
+            orb.hue = (orb.hue + 0.1) % 360;
+        });
+    }
+
+    drawOrbs() {
+        this.orbs.forEach(orb => {
+            const gradient = this.ctx.createRadialGradient(
+                orb.x, orb.y, 0,
+                orb.x, orb.y, orb.radius
+            );
+
+            gradient.addColorStop(0, `hsla(${orb.hue}, 70%, 60%, ${orb.opacity})`);
+            gradient.addColorStop(0.5, `hsla(${orb.hue}, 70%, 50%, ${orb.opacity * 0.5})`);
+            gradient.addColorStop(1, `hsla(${orb.hue}, 70%, 40%, 0)`);
+
+            this.ctx.fillStyle = gradient;
+            this.ctx.beginPath();
+            this.ctx.arc(orb.x, orb.y, orb.radius, 0, Math.PI * 2);
+            this.ctx.fill();
+        });
+    }
+}
+
+// Dynamic Geometric Patterns
+class DynamicPatterns {
+    constructor() {
+        this.patterns = [];
+        this.mouse = { x: 0, y: 0 };
+        this.init();
+    }
+
+    init() {
+        this.createPatterns();
+        this.bindEvents();
+        this.animate();
+    }
+
+    createPatterns() {
+        // Create floating geometric shapes
+        const patternCount = isMobile ? 8 : 12;
+        for (let i = 0; i < patternCount; i++) {
+            this.patterns.push({
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+                size: Math.random() * 30 + 10,
+                rotation: 0,
+                rotationSpeed: (Math.random() - 0.5) * 0.02,
+                type: Math.floor(Math.random() * 4), // 0: circle, 1: square, 2: triangle, 3: star
+                opacity: Math.random() * 0.1 + 0.05,
+                hue: Math.random() * 60 + 120,
+                vx: (Math.random() - 0.5) * 0.2,
+                vy: (Math.random() - 0.5) * 0.2
+            });
+        }
+    }
+
+    bindEvents() {
+        window.addEventListener('mousemove', (e) => {
+            this.mouse.x = e.clientX;
+            this.mouse.y = e.clientY;
+        });
+
+        window.addEventListener('resize', () => {
+            this.patterns.forEach(pattern => {
+                pattern.x = Math.min(pattern.x, window.innerWidth);
+                pattern.y = Math.min(pattern.y, window.innerHeight);
+            });
+        });
+    }
+
+    animate() {
+        this.updatePatterns();
+        this.drawPatterns();
+        requestAnimationFrame(() => this.animate());
+    }
+
+    updatePatterns() {
+        this.patterns.forEach(pattern => {
+            // Rotation
+            pattern.rotation += pattern.rotationSpeed;
+
+            // Mouse interaction
+            const dx = this.mouse.x - pattern.x;
+            const dy = this.mouse.y - pattern.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < 100) {
+                const force = (100 - distance) / 100;
+                pattern.vx += (dx / distance) * force * 0.01;
+                pattern.vy += (dy / distance) * force * 0.01;
+                pattern.rotationSpeed += force * 0.001;
+            }
+
+            // Movement
+            pattern.x += pattern.vx;
+            pattern.y += pattern.vy;
+
+            // Boundary wrapping
+            if (pattern.x < -50) pattern.x = window.innerWidth + 50;
+            if (pattern.x > window.innerWidth + 50) pattern.x = -50;
+            if (pattern.y < -50) pattern.y = window.innerHeight + 50;
+            if (pattern.y > window.innerHeight + 50) pattern.y = -50;
+
+            // Friction
+            pattern.vx *= 0.995;
+            pattern.vy *= 0.995;
+            pattern.rotationSpeed *= 0.995;
+        });
+    }
+
+    drawPatterns() {
+        // We'll use CSS transforms instead of canvas for better performance
+        this.patterns.forEach((pattern, index) => {
+            const element = document.querySelector(`.dynamic-pattern-${index}`);
+            if (element) {
+                element.style.transform = `
+                    translate(${pattern.x}px, ${pattern.y}px)
+                    rotate(${pattern.rotation}rad)
+                    scale(${1 + Math.sin(Date.now() * 0.001 + index) * 0.1})
+                `;
+                element.style.opacity = pattern.opacity + Math.sin(Date.now() * 0.002 + index) * 0.05;
+            }
+        });
+    }
+}
+
+// Breathing/Pulsing Background Elements
+class BreathingElements {
+    constructor() {
+        this.elements = [];
+        this.init();
+    }
+
+    init() {
+        this.findBreathingElements();
+        this.startBreathing();
+    }
+
+    findBreathingElements() {
+        // Add breathing class to specific elements
+        const heroBlobs = document.querySelectorAll('.blob');
+        const featureIcons = document.querySelectorAll('.icon-box');
+
+        this.elements = [...heroBlobs, ...featureIcons];
+        this.elements.forEach(el => el.classList.add('breathing'));
+    }
+
+    startBreathing() {
+        this.elements.forEach((element, index) => {
+            element.style.animation = `breathe ${2 + index * 0.5}s ease-in-out infinite ${index * 0.2}s`;
+        });
+    }
+}
+
+// Initialize interactive background effects
+if (!isMobile) { // Skip on mobile for performance
+    new InteractiveBackground();
+    new DynamicPatterns();
+}
+new BreathingElements();
