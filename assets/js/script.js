@@ -341,12 +341,19 @@ let headerTicking = false;
 window.addEventListener('scroll', () => {
     if (!headerTicking) {
         requestAnimationFrame(() => {
-            if (window.scrollY > 50) {
-                header.classList.add('scrolled');
-                backToTop.classList.add('visible');
-            } else {
-                header.classList.remove('scrolled');
-                backToTop.classList.remove('visible');
+            if (header) {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            }
+            if (backToTop) {
+                if (window.scrollY > 50) {
+                    backToTop.classList.add('visible');
+                } else {
+                    backToTop.classList.remove('visible');
+                }
             }
             headerTicking = false;
         });
@@ -354,11 +361,14 @@ window.addEventListener('scroll', () => {
     }
 }, { passive: true });
 
+// Scroll behavior respecting reduced motion preference
+const scrollBehavior = prefersReducedMotion ? 'auto' : 'smooth';
+
 // Smooth Scroll for Back to Top
 if (backToTop) {
     backToTop.addEventListener('click', (e) => {
         e.preventDefault();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: scrollBehavior });
     });
 }
 
@@ -370,7 +380,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             const targetElement = document.querySelector(targetId);
             if (targetElement) {
                 e.preventDefault();
-                targetElement.scrollIntoView({ behavior: 'smooth' });
+                targetElement.scrollIntoView({ behavior: scrollBehavior });
             }
         }
     });
@@ -541,6 +551,7 @@ class SectionTransitions {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
                     }
                 });
             }, { threshold, rootMargin });
@@ -602,8 +613,10 @@ class ProgressiveImageLoader {
         if (!src) return;
 
         img.src = src;
+        img.classList.add('blur');
 
         img.addEventListener('load', () => {
+            img.classList.remove('blur');
             img.classList.add('loaded');
         });
 
@@ -627,6 +640,7 @@ class MagneticButtons {
 
     init() {
         this.buttons.forEach(button => {
+            button.classList.add('magnetic-btn');
             this.bindEvents(button);
         });
     }
