@@ -1,6 +1,11 @@
-// Initialize Lenis Smooth Scroll
+// Mobile and accessibility detection
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const prefersHighContrast = window.matchMedia('(prefers-contrast: high)').matches;
+
+// Initialize Lenis Smooth Scroll (skip on mobile or reduced motion)
 let lenis;
-if (typeof Lenis !== 'undefined') {
+if (typeof Lenis !== 'undefined' && !isMobile && !prefersReducedMotion) {
     lenis = new Lenis({
         duration: 1.2,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -17,9 +22,8 @@ if (typeof Lenis !== 'undefined') {
     requestAnimationFrame(raf);
 }
 
-// Initialize AOS
-// Initialize AOS
-if (typeof AOS !== 'undefined' && typeof AOS.init === 'function') {
+// Initialize AOS (skip on reduced motion)
+if (typeof AOS !== 'undefined' && typeof AOS.init === 'function' && !prefersReducedMotion) {
     AOS.init({
         once: true,
         offset: 50,
@@ -28,9 +32,8 @@ if (typeof AOS !== 'undefined' && typeof AOS.init === 'function') {
     });
 }
 
-// Initialize Vanilla Tilt
-// Initialize Vanilla Tilt
-if (typeof VanillaTilt !== 'undefined') {
+// Initialize Vanilla Tilt (skip on mobile or reduced motion)
+if (typeof VanillaTilt !== 'undefined' && !isMobile && !prefersReducedMotion) {
     VanillaTilt.init(document.querySelectorAll(".feature-card"), {
         max: 15,
         speed: 400,
@@ -255,27 +258,94 @@ window.addEventListener('load', () => {
     }
 });
 
-// Mobile Menu
+// Mobile Menu with enhanced accessibility
 const mobileToggle = document.getElementById('mobile-toggle');
 const mobileMenu = document.getElementById('mobile-menu');
 const mobileLinks = document.querySelectorAll('.mobile-menu a');
 
 if (mobileToggle && mobileMenu) {
+    // Click handler
     mobileToggle.addEventListener('click', () => {
-        const isActive = mobileMenu.classList.toggle('active');
-        mobileToggle.classList.toggle('active');
-        mobileToggle.setAttribute('aria-expanded', isActive);
-        document.body.style.overflow = isActive ? 'hidden' : '';
+        toggleMobileMenu();
     });
 
+    // Keyboard support
+    mobileToggle.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggleMobileMenu();
+        }
+    });
+
+    // Close on escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
+            toggleMobileMenu();
+        }
+    });
+
+    // Close on outside click
+    document.addEventListener('click', (e) => {
+        if (!mobileMenu.contains(e.target) && !mobileToggle.contains(e.target) && mobileMenu.classList.contains('active')) {
+            toggleMobileMenu();
+        }
+    });
+
+    // Handle mobile menu links
     mobileLinks.forEach(link => {
         link.addEventListener('click', () => {
-            mobileMenu.classList.remove('active');
-            mobileToggle.classList.remove('active');
-            mobileToggle.setAttribute('aria-expanded', 'false');
-            document.body.style.overflow = '';
+            closeMobileMenu();
         });
     });
+
+    // Focus management
+    mobileMenu.addEventListener('transitionend', () => {
+        if (mobileMenu.classList.contains('active')) {
+            // Focus first link when menu opens
+            const firstLink = mobileMenu.querySelector('a');
+            if (firstLink) firstLink.focus();
+        } else {
+            // Return focus to toggle when menu closes
+            mobileToggle.focus();
+        }
+    });
+}
+
+function toggleMobileMenu() {
+    const isActive = mobileMenu.classList.toggle('active');
+    mobileToggle.classList.toggle('active');
+    mobileToggle.setAttribute('aria-expanded', isActive);
+    document.body.style.overflow = isActive ? 'hidden' : '';
+
+    // Announce to screen readers
+    const announcement = isActive ? 'تم فتح القائمة' : 'تم إغلاق القائمة';
+    announceToScreenReader(announcement);
+}
+
+function closeMobileMenu() {
+    mobileMenu.classList.remove('active');
+    mobileToggle.classList.remove('active');
+    mobileToggle.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+}
+
+// Screen reader announcements
+function announceToScreenReader(message) {
+    const announcement = document.createElement('div');
+    announcement.setAttribute('aria-live', 'polite');
+    announcement.setAttribute('aria-atomic', 'true');
+    announcement.style.position = 'absolute';
+    announcement.style.left = '-10000px';
+    announcement.style.width = '1px';
+    announcement.style.height = '1px';
+    announcement.style.overflow = 'hidden';
+
+    document.body.appendChild(announcement);
+    announcement.textContent = message;
+
+    setTimeout(() => {
+        document.body.removeChild(announcement);
+    }, 1000);
 }
 
 // Header scroll effect

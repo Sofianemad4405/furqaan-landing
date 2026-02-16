@@ -19,6 +19,13 @@
     --gradient-primary: linear-gradient(135deg, #0A5C3E 0%, #073D29 100%);
     --gradient-secondary: linear-gradient(135deg, #D4AF37 0%, #F4D03F 100%);
     --gradient-hero: linear-gradient(135deg, rgba(10, 92, 62, 0.03) 0%, rgba(212, 175, 55, 0.05) 100%);
+    /* Islamic Geometric Patterns */
+    --pattern-arabesque: radial-gradient(circle at 25% 25%, rgba(212, 175, 55, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(10, 92, 62, 0.03) 0%, transparent 50%);
+    --pattern-geometric: repeating-conic-gradient(from 0deg at 50% 50%, rgba(212, 175, 55, 0.02) 0deg 90deg, transparent 90deg 180deg);
+    --pattern-islamic-stars: radial-gradient(circle at 20% 80%, rgba(10, 92, 62, 0.02) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(212, 175, 55, 0.02) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(230, 126, 34, 0.01) 0%, transparent 50%);
 }
 
 [data-theme="dark"] {
@@ -43,6 +50,184 @@
     --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.8);
     --shadow-xl: 0 24px 64px rgba(0, 0, 0, 1);
     --shadow-colored: 0 12px 40px rgba(52, 211, 153, 0.3);
+    /* Islamic Geometric Patterns - Dark Mode */
+    --pattern-arabesque: radial-gradient(circle at 25% 25%, rgba(252, 211, 77, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 75% 75%, rgba(52, 211, 153, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(251, 191, 36, 0.05) 0%, transparent 60%);
+    --pattern-geometric: repeating-conic-gradient(from 0deg at 50% 50%, rgba(252, 211, 77, 0.06) 0deg 45deg, transparent 45deg 90deg, rgba(52, 211, 153, 0.04) 90deg 135deg, transparent 135deg 180deg);
+    --pattern-islamic-stars: radial-gradient(circle at 20% 80%, rgba(52, 211, 153, 0.06) 0%, transparent 30%),
+        radial-gradient(circle at 80% 20%, rgba(252, 211, 77, 0.06) 0%, transparent 30%),
+        radial-gradient(circle at 40% 40%, rgba(251, 191, 36, 0.04) 0%, transparent 40%),
+        radial-gradient(circle at 60% 60%, rgba(34, 197, 94, 0.05) 0%, transparent 35%);
+}
+
+.skip-link:focus {
+    top: 6px;
+}
+
+/* PWA Notifications */
+.update-notification,
+.offline-notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--primary);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    z-index: 10000;
+    animation: slideDown 0.3s ease-out;
+}
+
+.update-content,
+.offline-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.update-notification button,
+.offline-notification button {
+    background: white;
+    color: var(--primary);
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.update-notification button:hover,
+.offline-notification button:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-1px);
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateX(-50%) translateY(-100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Offline state styling */
+.offline {
+    filter: grayscale(20%);
+}
+
+.offline::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.1);
+    pointer-events: none;
+    z-index: 9999;
+}
+
+/* Focus indicators for better accessibility */
+*:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    :root {
+        --primary: #000000;
+        --secondary: #000000;
+        --text-main: #000000;
+        --background: #ffffff;
+        --surface: #ffffff;
+    }
+
+    [data-theme="dark"] {
+        --primary: #ffffff;
+        --secondary: #ffffff;
+        --text-main: #ffffff;
+        --background: #000000;
+        --surface: #000000;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Screen reader only content */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Better focus for interactive elements */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: 3px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* Dark mode focus indicators */
+[data-theme="dark"] button:focus-visible,
+[data-theme="dark"] a:focus-visible,
+[data-theme="dark"] input:focus-visible,
+[data-theme="dark"] textarea:focus-visible,
+[data-theme="dark"] select:focus-visible {
+    outline: 3px solid var(--secondary);
+}
+
+/* Skip link improvements */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: var(--primary);
+    color: white;
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 500;
+    z-index: 1000;
+    transition: top 0.3s ease, background 0.2s ease;
+}
+
+.skip-link:hover {
+    background: var(--primary-dark);
+}
+
+.skip-link:focus {
+    top: 6px;
+    outline: 3px solid white;
+    outline-offset: 2px;
 }
 
 * {
@@ -355,7 +540,10 @@ header.scrolled {
     padding: 200px 0 120px;
     position: relative;
     overflow: hidden;
-    background: var(--gradient-hero);
+    background: var(--gradient-hero), var(--pattern-islamic-stars);
+    background-size: 100% 100%, 200px 200px;
+    background-position: center, 0 0;
+    background-repeat: no-repeat, repeat;
 }
 
 .hero-layout {
@@ -431,6 +619,19 @@ header.scrolled {
     padding: 120px 0;
     background: #fff;
     position: relative;
+}
+
+.features::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--pattern-arabesque);
+    background-size: 150px 150px;
+    opacity: 0.3;
+    pointer-events: none;
 }
 
 [data-theme="dark"] .features {
@@ -634,6 +835,19 @@ header.scrolled {
     text-align: center;
 }
 
+.download-banner::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 30% 70%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 70% 30%, rgba(212, 175, 55, 0.04) 0%, transparent 50%);
+    background-size: 120px 120px;
+    pointer-events: none;
+}
+
 [data-theme="dark"] .download-banner {
     background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(2, 6, 23, 1) 100%);
     border-top: 1px solid rgba(255, 255, 255, 0.05);
@@ -814,6 +1028,20 @@ header.scrolled {
     padding: 80px 0 40px;
     background: #fff;
     border-top: 1px solid var(--border);
+    position: relative;
+}
+
+.main-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--pattern-geometric);
+    background-size: 100px 100px;
+    opacity: 0.2;
+    pointer-events: none;
 }
 
 [data-theme="dark"] .main-footer {
@@ -1138,5 +1366,262 @@ header.scrolled {
 
     .nav-content {
         gap: 10px;
+    }
+}
+
+/* Islamic Geometric Decorative Elements */
+.islamic-divider {
+    position: relative;
+    height: 40px;
+    margin: 40px 0;
+    background: var(--pattern-geometric);
+    background-size: 60px 60px;
+    opacity: 0.4;
+}
+
+.islamic-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 4px;
+    background: var(--secondary);
+    border-radius: 2px;
+}
+
+.islamic-decor {
+    position: relative;
+    display: inline-block;
+}
+
+.islamic-decor::before,
+.islamic-decor::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 20px;
+    height: 2px;
+    background: var(--secondary);
+    transform: translateY(-50%);
+}
+
+.islamic-decor::before {
+    left: -30px;
+}
+
+.islamic-decor::after {
+    right: -30px;
+}
+
+/* Section backgrounds with subtle patterns */
+.section-pattern {
+    position: relative;
+}
+
+.section-pattern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--pattern-arabesque);
+    background-size: 200px 200px;
+    opacity: 0.05;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.section-pattern>* {
+    position: relative;
+    z-index: 1;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+
+    /* Touch-friendly buttons and links */
+    button,
+    .btn,
+    a[role="button"],
+    .store-btn {
+        min-height: 44px;
+        min-width: 44px;
+        padding: 12px 16px;
+    }
+
+    /* Better spacing for touch */
+    .nav-links a,
+    .mobile-menu a {
+        padding: 16px 20px;
+        margin: 4px 0;
+    }
+
+    /* Improved mobile navigation */
+    .mobile-menu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: var(--surface);
+        z-index: 999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+    }
+
+    .mobile-menu.active {
+        transform: translateX(0);
+    }
+
+    .mobile-menu a {
+        font-size: 1.2rem;
+        margin: 10px 0;
+        width: 80%;
+        text-align: center;
+        border-radius: 8px;
+    }
+
+    /* Mobile-optimized hero */
+    .hero {
+        padding: 80px 0 40px;
+        text-align: center;
+    }
+
+    .hero-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .hero-text {
+        margin-bottom: 40px;
+    }
+
+    .hero-image-wrapper {
+        order: -1;
+        margin-bottom: 30px;
+    }
+
+    /* Mobile-optimized features */
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .feature-card {
+        padding: 30px 20px;
+        text-align: center;
+    }
+
+    /* Better mobile typography */
+    h1 {
+        font-size: 2.2rem;
+        line-height: 1.2;
+    }
+
+    h2 {
+        font-size: 1.8rem;
+    }
+
+    h3 {
+        font-size: 1.4rem;
+    }
+
+    /* Mobile-optimized buttons */
+    .store-buttons {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .store-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Touch feedback */
+    button:active,
+    .btn:active,
+    .store-btn:active {
+        transform: scale(0.98);
+    }
+
+    /* Mobile-optimized forms (if any) */
+    input,
+    textarea,
+    select {
+        font-size: 16px;
+        /* Prevents zoom on iOS */
+        padding: 12px;
+    }
+}
+
+/* Tablet optimizations */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .hero-content {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+/* Large screen optimizations */
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1200px;
+    }
+
+    .features-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Safe area support for notched devices */
+@supports (padding: max(0px)) {
+
+    .hero,
+    header {
+        padding-left: max(16px, env(safe-area-inset-left));
+        padding-right: max(16px, env(safe-area-inset-right));
+    }
+}
+
+/* Dark mode mobile optimizations */
+[data-theme="dark"] .mobile-menu {
+    background: var(--surface);
+    color: var(--text-main);
+}
+
+/* Print styles for accessibility */
+@media print {
+    * {
+        background: transparent !important;
+        color: black !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+
+    a,
+    a:visited {
+        text-decoration: underline;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    button,
+    .btn,
+    .theme-toggle,
+    .mobile-toggle {
+        display: none !important;
     }
 }

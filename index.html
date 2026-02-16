@@ -4,9 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0A5C3E">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="الفرقان">
     <title>الفرقان - رفيقك الكامل للقرآن الكريم</title>
+    <link rel="manifest" href="/manifest.json">
     <meta name="description"
         content="اقرأ، تتبع، وعمق صلتك بالقرآن الكريم. الفرقان يوفر بيئة جميلة وخالية من المشتتات لرحلتك الروحانية.">
+    <link rel="canonical" href="https://furqaan.app/">
+    <meta name="keywords" content="قرآن, قرآن كريم, تطبيق قرآن, قراءة قرآن, تتبع قرآن, اسلام, مسلم, قرآن مجاني">
+    <meta name="author" content="فريق الفرقان">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="Arabic">
 
     <!-- Open Graph / Social Media -->
     <meta property="og:type" content="website">
@@ -21,6 +31,10 @@
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
 
+    <!-- Preload critical resources -->
+    <link rel="preload" href="assets/css/style.css" as="style">
+    <link rel="preload" href="assets/images/logo.png" as="image">
+
     <!-- Animation Library (AOS) -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
@@ -34,11 +48,38 @@
         })();
     </script>
     <link rel="stylesheet" href="assets/css/style.css">
+
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "الفرقان",
+        "description": "رفيقك الكامل للقرآن الكريم - اقرأ، تتبع، وعمق صلتك بالقرآن الكريم",
+        "applicationCategory": "LifestyleApplication",
+        "operatingSystem": "Android",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "author": {
+            "@type": "Organization",
+            "name": "فريق الفرقان"
+        },
+        "inLanguage": "ar",
+        "url": "https://furqaan.app",
+        "image": "https://furqaan.app/assets/images/logo.png"
+    }
+    </script>
 </head>
 
 <body>
 
-    <div id="loader">
+    <!-- Skip to main content link for accessibility -->
+    <a href="#main-content" class="skip-link">تخطي إلى المحتوى الرئيسي</a>
+
+    <div id="loader" role="status" aria-live="polite" aria-label="جاري تحميل التطبيق">
         <div class="islamic-loader">
             <div class="rub-el-hizb">
                 <div class="square square-1"></div>
@@ -48,7 +89,7 @@
         </div>
     </div>
 
-    <header id="header">
+    <header id="header" role="banner">
         <div class="container nav-content">
             <a href="#" class="logo">
                 <img src="assets/images/logo.png" alt="شعار الفرقان">
@@ -62,11 +103,19 @@
                 <span></span>
             </button>
 
-            <nav class="nav-links">
+            <nav class="nav-links" role="navigation" aria-label="القائمة الرئيسية">
                 <a href="#features">المميزات</a>
                 <a href="#journey">الرحلة</a>
                 <a href="#gallery">المعرض</a>
                 <a href="#download">التحميل</a>
+                <button id="install-button" class="btn btn-secondary" style="display: none;" aria-label="تثبيت التطبيق">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7,10 12,15 17,10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    تثبيت
+                </button>
             </nav>
 
             <div class="mobile-menu" id="mobile-menu">
@@ -105,7 +154,7 @@
         </div>
     </header>
 
-    <section class="hero" style="position: relative;">
+    <section class="hero" id="main-content" style="position: relative;" role="main">
         <canvas id="hero-canvas"
             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none;"></canvas>
         <div class="blob blob-1"></div>
@@ -144,7 +193,7 @@
 
             <div class="hero-image-wrapper" data-aos="fade-right" data-aos-duration="1200" data-aos-delay="200">
                 <div class="phone-mockup">
-                    <img src="assets/images/ds.jpg" alt="واجهة الفرقان">
+                    <img src="assets/images/ds.jpg" alt="واجهة الفرقان" loading="lazy">
                 </div>
             </div>
         </div>
@@ -158,7 +207,7 @@
         <div class="container download-content">
             <div data-aos="fade-up">
                 <span class="download-eyebrow">ابدأ اليوم</span>
-                <h2>ابدأ رحلتك مع القرآن</h2>
+                <h2 class="islamic-decor">ابدأ رحلتك مع القرآن</h2>
                 <p>حمل تطبيق الفرقان اليوم واستمتع بتجربة فريدة تعينك على تلاوة وتدبر كتاب الله.</p>
                 <div class="store-buttons download-buttons">
                     <a href="#" class="store-btn btn-white-store">
@@ -186,17 +235,19 @@
         </div>
     </section>
 
-    <section id="features" class="features">
+    <section id="features" class="features" aria-labelledby="features-heading">
         <div class="container">
             <div class="section-header" data-aos="fade-up">
-                <h2>صُمم لنموك الروحي</h2>
+                <h2 id="features-heading" class="islamic-decor">صُمم لنموك الروحي</h2>
                 <p>كل ما تحتاجه للحفاظ على وردك القرآني وتعظيم انتفاعك، في مكان واحد.</p>
             </div>
 
-            <div class="features-grid">
+            <div class="islamic-divider"></div>
+
+            <div class="features-grid" role="list">
                 <!-- Feature 1 -->
-                <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
-                    <div class="icon-box">
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="100" role="listitem">
+                    <div class="icon-box" aria-hidden="true">
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
@@ -239,16 +290,16 @@
     <section id="journey" class="journey">
         <div class="journey-pattern"></div>
         <div class="container journey-content">
-            <h2 data-aos="fade-up">رحلة من النمو الروحي</h2>
+            <h2 data-aos="fade-up" class="islamic-decor">رحلة من النمو الروحي</h2>
             <p data-aos="fade-up" data-aos-delay="100">"أحب الأعمال إلى الله أدومها وإن قل"</p>
 
             <div class="journey-mockup-wrapper" data-aos="zoom-in" data-aos-duration="1000">
-                <img src="assets/images/photo_2026-02-16_00-14-22.jpg" alt="استخدام التطبيق" class="journey-mockup">
+                <img src="assets/images/photo_2026-02-16_00-14-22.jpg" alt="استخدام التطبيق" class="journey-mockup" loading="lazy">
             </div>
         </div>
     </section>
 
-    <section id="gallery" class="screenshots">
+    <section id="gallery" class="screenshots section-pattern">
         <div class="container">
             <div class="section-header" data-aos="fade-down">
                 <h2>واجهة مصممة بإتقان</h2>
@@ -259,16 +310,16 @@
         <div class="carousel-container">
             <div class="carousel-track">
                 <!-- Set 1 -->
-                <div class="screen-item"><img src="assets/images/ds.jpg" alt="Screen 1"></div>
-                <div class="screen-item"><img src="assets/images/photo_2026-02-16_00-14-22.jpg" alt="Screen 2"></div>
-                <div class="screen-item"><img src="assets/images/photo_2026-02-16_00-14-50.jpg" alt="Screen 3"></div>
-                <div class="screen-item"><img src="assets/images/photo_2026-02-16_00-14-57.jpg" alt="Screen 4"></div>
+                <div class="screen-item"><img src="assets/images/ds.jpg" alt="Screen 1" loading="lazy"></div>
+                <div class="screen-item"><img src="assets/images/photo_2026-02-16_00-14-22.jpg" alt="Screen 2" loading="lazy"></div>
+                <div class="screen-item"><img src="assets/images/photo_2026-02-16_00-14-50.jpg" alt="Screen 3" loading="lazy"></div>
+                <div class="screen-item"><img src="assets/images/photo_2026-02-16_00-14-57.jpg" alt="Screen 4" loading="lazy"></div>
 
                 <!-- Set 2 (Duplicate for infinite scroll) -->
-                <div class="screen-item"><img src="assets/images/ds.jpg" alt="Screen 1"></div>
-                <div class="screen-item"><img src="assets/images/photo_2026-02-16_00-14-22.jpg" alt="Screen 2"></div>
-                <div class="screen-item"><img src="assets/images/photo_2026-02-16_00-14-50.jpg" alt="Screen 3"></div>
-                <div class="screen-item"><img src="assets/images/photo_2026-02-16_00-14-57.jpg" alt="Screen 4"></div>
+                <div class="screen-item"><img src="assets/images/ds.jpg" alt="Screen 1" loading="lazy"></div>
+                <div class="screen-item"><img src="assets/images/photo_2026-02-16_00-14-22.jpg" alt="Screen 2" loading="lazy"></div>
+                <div class="screen-item"><img src="assets/images/photo_2026-02-16_00-14-50.jpg" alt="Screen 3" loading="lazy"></div>
+                <div class="screen-item"><img src="assets/images/photo_2026-02-16_00-14-57.jpg" alt="Screen 4" loading="lazy"></div>
             </div>
         </div>
     </section>
@@ -298,6 +349,116 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('Service Worker registered:', registration);
+
+                        // Handle updates
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // New content is available, show update prompt
+                                    showUpdateNotification();
+                                }
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            });
+        }
+
+        // PWA Install Prompt
+        let deferredPrompt;
+        const installButton = document.getElementById('install-button');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent the mini-infobar from appearing on mobile
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
+
+            // Show install button if it exists
+            if (installButton) {
+                installButton.style.display = 'inline-block';
+            }
+        });
+
+        // Handle install button click
+        if (installButton) {
+            installButton.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log(`User response to install prompt: ${outcome}`);
+                    deferredPrompt = null;
+
+                    // Hide install button
+                    installButton.style.display = 'none';
+                }
+            });
+        }
+
+        // Handle successful installation
+        window.addEventListener('appinstalled', (evt) => {
+            console.log('PWA was installed successfully');
+            if (installButton) {
+                installButton.style.display = 'none';
+            }
+        });
+
+        // Update notification
+        function showUpdateNotification() {
+            const notification = document.createElement('div');
+            notification.className = 'update-notification';
+            notification.innerHTML = `
+                <div class="update-content">
+                    <p>تم تحديث التطبيق! انقر للتحديث</p>
+                    <button onclick="location.reload()">تحديث</button>
+                </div>
+            `;
+            document.body.appendChild(notification);
+        }
+
+        // Network status detection
+        function updateNetworkStatus() {
+            const isOnline = navigator.onLine;
+            document.documentElement.classList.toggle('offline', !isOnline);
+
+            if (!isOnline) {
+                showOfflineNotification();
+            }
+        }
+
+        function showOfflineNotification() {
+            const notification = document.createElement('div');
+            notification.className = 'offline-notification';
+            notification.innerHTML = `
+                <div class="offline-content">
+                    <p>أنت غير متصل بالإنترنت. بعض المميزات قد لا تعمل</p>
+                </div>
+            `;
+            document.body.appendChild(notification);
+
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 5000);
+        }
+
+        window.addEventListener('online', updateNetworkStatus);
+        window.addEventListener('offline', updateNetworkStatus);
+        updateNetworkStatus();
+    </script>
 
     <script src="assets/js/script.js"></script>
 </body>
