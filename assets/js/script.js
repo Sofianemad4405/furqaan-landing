@@ -635,3 +635,428 @@ class TextShadowEffects {
 
 // Initialize text shadow effects
 new TextShadowEffects();
+
+// Smooth Section Transitions with Fade Effects
+class SectionTransitions {
+    constructor() {
+        this.sections = document.querySelectorAll('section');
+        this.init();
+    }
+
+    init() {
+        this.bindScrollEvents();
+        this.checkInitialVisibility();
+    }
+
+    bindScrollEvents() {
+        window.addEventListener('scroll', () => {
+            this.checkVisibility();
+        });
+    }
+
+    checkInitialVisibility() {
+        this.checkVisibility();
+    }
+
+    checkVisibility() {
+        const scrollTop = window.pageYOffset;
+        const windowHeight = window.innerHeight;
+
+        this.sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.offsetHeight;
+
+            if (scrollTop + windowHeight * 0.8 > sectionTop &&
+                scrollTop < sectionTop + sectionHeight) {
+                section.classList.add('visible');
+            }
+        });
+    }
+}
+
+// Initialize section transitions
+new SectionTransitions();
+
+// Skeleton Loading Animations for Images and Content
+class SkeletonLoader {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        this.addSkeletonToImages();
+        this.addSkeletonToContent();
+        this.bindLoadEvents();
+    }
+
+    addSkeletonToImages() {
+        const images = document.querySelectorAll('img[loading="lazy"]');
+        images.forEach(img => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'progressive-image skeleton-image';
+            img.parentNode.insertBefore(wrapper, img);
+            wrapper.appendChild(img);
+
+            // Add blur class initially
+            img.classList.add('blur');
+        });
+    }
+
+    addSkeletonToContent() {
+        // Add skeleton to feature cards initially
+        const featureCards = document.querySelectorAll('.feature-card');
+        featureCards.forEach(card => {
+            card.classList.add('skeleton-loading');
+            const skeletonContent = `
+                <div class="skeleton skeleton-card">
+                    <div class="skeleton skeleton-text"></div>
+                    <div class="skeleton skeleton-text"></div>
+                    <div class="skeleton skeleton-text"></div>
+                </div>
+            `;
+            card.innerHTML = skeletonContent;
+        });
+    }
+
+    bindLoadEvents() {
+        // Handle image loading
+        const images = document.querySelectorAll('.progressive-image img');
+        images.forEach(img => {
+            img.addEventListener('load', () => {
+                img.classList.remove('blur');
+                img.classList.add('loaded');
+                img.parentNode.classList.remove('skeleton-image');
+            });
+        });
+
+        // Handle content loading (simulate with timeout for demo)
+        setTimeout(() => {
+            this.removeSkeletonFromContent();
+        }, 2000);
+    }
+
+    removeSkeletonFromContent() {
+        const featureCards = document.querySelectorAll('.feature-card');
+        featureCards.forEach(card => {
+            card.classList.remove('skeleton-loading');
+            // Restore original content (this would normally be done with actual content)
+            card.innerHTML = card.getAttribute('data-original-content') || card.innerHTML;
+        });
+    }
+}
+
+// Initialize skeleton loader
+new SkeletonLoader();
+
+// Progressive Image Loading with Blur-to-Sharp Transitions
+class ProgressiveImageLoader {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        this.setupIntersectionObserver();
+    }
+
+    setupIntersectionObserver() {
+        const images = document.querySelectorAll('img[data-src]');
+
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        this.loadImage(img);
+                        observer.unobserve(img);
+                    }
+                });
+            });
+
+            images.forEach(img => imageObserver.observe(img));
+        } else {
+            // Fallback for browsers without IntersectionObserver
+            images.forEach(img => this.loadImage(img));
+        }
+    }
+
+    loadImage(img) {
+        const src = img.getAttribute('data-src');
+        if (!src) return;
+
+        img.src = src;
+        img.classList.add('blur');
+
+        img.addEventListener('load', () => {
+            img.classList.remove('blur');
+            img.classList.add('loaded');
+        });
+
+        img.removeAttribute('data-src');
+    }
+}
+
+// Initialize progressive image loader
+new ProgressiveImageLoader();
+
+// Micro-interactions during Page Transitions
+class PageTransitions {
+    constructor() {
+        this.transitionElement = null;
+        this.init();
+    }
+
+    init() {
+        this.createTransitionElement();
+        this.bindNavigationEvents();
+    }
+
+    createTransitionElement() {
+        this.transitionElement = document.createElement('div');
+        this.transitionElement.className = 'page-transition';
+        this.transitionElement.innerHTML = `
+            <div class="islamic-loader">
+                <div class="rub-el-hizb">
+                    <div class="square square-1"></div>
+                    <div class="square square-2"></div>
+                </div>
+                <div class="loader-text">الفرقان</div>
+            </div>
+        `;
+        document.body.appendChild(this.transitionElement);
+    }
+
+    bindNavigationEvents() {
+        // Handle anchor link clicks
+        document.querySelectorAll('a[href^="#"]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                const href = link.getAttribute('href');
+                if (href && href !== '#') {
+                    e.preventDefault();
+                    this.startTransition(href);
+                }
+            });
+        });
+    }
+
+    startTransition(targetHref) {
+        this.transitionElement.classList.add('active');
+
+        setTimeout(() => {
+            // Navigate to target
+            if (lenis) {
+                const targetElement = document.querySelector(targetHref);
+                if (targetElement) {
+                    lenis.scrollTo(targetElement);
+                }
+            } else {
+                window.location.hash = targetHref;
+            }
+
+            this.endTransition();
+        }, 600);
+    }
+
+    endTransition() {
+        setTimeout(() => {
+            this.transitionElement.classList.add('fade-out');
+            setTimeout(() => {
+                this.transitionElement.classList.remove('active', 'fade-out');
+            }, 600);
+        }, 300);
+    }
+}
+
+// Initialize page transitions
+new PageTransitions();
+
+// Magnetic Button Effects that Follow Cursor Movement
+class MagneticButtons {
+    constructor() {
+        this.buttons = document.querySelectorAll('.btn, .store-btn');
+        this.init();
+    }
+
+    init() {
+        this.buttons.forEach(button => {
+            button.classList.add('magnetic-btn');
+            this.bindEvents(button);
+        });
+    }
+
+    bindEvents(button) {
+        button.addEventListener('mousemove', (e) => {
+            this.handleMouseMove(e, button);
+        });
+
+        button.addEventListener('mouseleave', () => {
+            this.resetPosition(button);
+        });
+    }
+
+    handleMouseMove(e, button) {
+        const rect = button.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+
+        const distance = Math.sqrt(x * x + y * y);
+        const maxDistance = 50;
+
+        if (distance < maxDistance) {
+            const strength = (maxDistance - distance) / maxDistance;
+            const moveX = x * strength * 0.3;
+            const moveY = y * strength * 0.3;
+
+            button.style.transform = `translate(${moveX}px, ${moveY}px)`;
+        }
+    }
+
+    resetPosition(button) {
+        button.style.transform = 'translate(0, 0)';
+    }
+}
+
+// Initialize magnetic buttons
+new MagneticButtons();
+
+// Ripple Effects on Button Clicks
+class RippleEffects {
+    constructor() {
+        this.buttons = document.querySelectorAll('.btn, .store-btn, button');
+        this.init();
+    }
+
+    init() {
+        this.buttons.forEach(button => {
+            button.classList.add('btn-ripple');
+            button.addEventListener('click', (e) => {
+                this.createRipple(e, button);
+            });
+        });
+    }
+
+    createRipple(e, button) {
+        const rect = button.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = e.clientX - rect.left - size / 2;
+        const y = e.clientY - rect.top - size / 2;
+
+        button.style.setProperty('--ripple-x', `${x}px`);
+        button.style.setProperty('--ripple-y', `${y}px`);
+
+        // Reset animation
+        button.style.animation = 'none';
+        button.offsetHeight; // Trigger reflow
+        button.style.animation = 'ripple 0.6s ease-out';
+    }
+}
+
+// Initialize ripple effects
+new RippleEffects();
+
+// Subtle Parallax Scrolling Effects
+class ParallaxEffects {
+    constructor() {
+        this.elements = document.querySelectorAll('.parallax-element');
+        this.init();
+    }
+
+    init() {
+        this.bindScrollEvents();
+        this.updateParallax();
+    }
+
+    bindScrollEvents() {
+        window.addEventListener('scroll', () => {
+            this.updateParallax();
+        });
+    }
+
+    updateParallax() {
+        const scrolled = window.pageYOffset;
+
+        this.elements.forEach(element => {
+            const rate = element.getAttribute('data-parallax-rate') || 0.5;
+            const yPos = -(scrolled * rate);
+            element.style.setProperty('--parallax-y', `${yPos}px`);
+        });
+
+        // Update specific elements
+        this.updateHeroParallax(scrolled);
+        this.updateBackgroundParallax(scrolled);
+    }
+
+    updateHeroParallax(scrolled) {
+        const heroTitle = document.querySelector('.hero h1');
+        if (heroTitle) {
+            const yPos = -(scrolled * 0.2);
+            heroTitle.style.transform = `translateY(${yPos}px)`;
+        }
+
+        const heroImage = document.querySelector('.phone-mockup');
+        if (heroImage) {
+            const yPos = -(scrolled * 0.1);
+            heroImage.style.transform = `translateY(${yPos}px) rotateY(-10deg) rotateX(5deg)`;
+        }
+    }
+
+    updateBackgroundParallax(scrolled) {
+        const hero = document.querySelector('.hero');
+        if (hero) {
+            const yPos = -(scrolled * 0.3);
+            hero.style.backgroundPosition = `center ${yPos}px`;
+        }
+    }
+}
+
+// Initialize parallax effects
+new ParallaxEffects();
+
+// Mini Progress Bar for Scroll Position
+class ScrollProgressBar {
+    constructor() {
+        this.progressBar = null;
+        this.init();
+    }
+
+    init() {
+        this.createProgressBar();
+        this.bindEvents();
+        this.updateProgress();
+    }
+
+    createProgressBar() {
+        this.progressBar = document.createElement('div');
+        this.progressBar.id = 'scroll-progress';
+        this.progressBar.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            z-index: 9999;
+            transition: width 0.1s ease-out;
+            box-shadow: 0 0 10px rgba(10, 92, 62, 0.3);
+        `;
+        document.body.appendChild(this.progressBar);
+    }
+
+    bindEvents() {
+        window.addEventListener('scroll', () => {
+            this.updateProgress();
+        });
+
+        window.addEventListener('resize', () => {
+            this.updateProgress();
+        });
+    }
+
+    updateProgress() {
+        const windowHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const scrolled = (window.pageYOffset / windowHeight) * 100;
+        this.progressBar.style.width = `${Math.min(scrolled, 100)}%`;
+    }
+}
+
+// Initialize scroll progress bar
+new ScrollProgressBar();
