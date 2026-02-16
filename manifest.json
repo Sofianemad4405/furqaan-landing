@@ -1,0 +1,98 @@
+{
+    "name": "الفرقان - رفيقك الكامل للقرآن الكريم",
+    "short_name": "الفرقان",
+    "description": "بيئة جميلة وخالية من المشتتات لرحلتك مع القرآن الكريم",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0A5C3E",
+    "theme_color": "#0A5C3E",
+    "orientation": "portrait-primary",
+    "lang": "ar",
+    "dir": "rtl",
+    "scope": "/",
+    "categories": ["lifestyle", "education", "books"],
+    "screenshots": [
+        {
+            "src": "/assets/images/ds.jpg",
+            "sizes": "1280x720",
+            "type": "image/jpeg",
+            "form_factor": "wide"
+        }
+    ],
+    "icons": [
+        {
+            "src": "/assets/images/logo.png",
+            "sizes": "72x72",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/assets/images/logo.png",
+            "sizes": "96x96",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/assets/images/logo.png",
+            "sizes": "128x128",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/assets/images/logo.png",
+            "sizes": "144x144",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/assets/images/logo.png",
+            "sizes": "152x152",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/assets/images/logo.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/assets/images/logo.png",
+            "sizes": "384x384",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/assets/images/logo.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "المميزات",
+            "short_name": "المميزات",
+            "description": "استكشف مميزات التطبيق",
+            "url": "/#features",
+            "icons": [
+                {
+                    "src": "/assets/images/logo.png",
+                    "sizes": "96x96"
+                }
+            ]
+        },
+        {
+            "name": "التحميل",
+            "short_name": "التحميل",
+            "description": "حمّل التطبيق الآن",
+            "url": "/#download",
+            "icons": [
+                {
+                    "src": "/assets/images/logo.png",
+                    "sizes": "96x96"
+                }
+            ]
+        }
+    ]
+}
