@@ -1736,3 +1736,306 @@ class AdvancedHoverStates {
 new MorphingElements();
 new LiquidButtons();
 new AdvancedHoverStates();
+
+// Advanced Gesture Support
+class GestureSupport {
+    constructor() {
+        this.touchStartX = null;
+        this.touchStartY = null;
+        this.touchEndX = null;
+        this.touchEndY = null;
+        this.isSwipeInProgress = false;
+        this.pullRefreshElement = null;
+        this.isPulling = false;
+        this.pullDistance = 0;
+        this.init();
+    }
+
+    init() {
+        this.bindTouchEvents();
+        this.setupPullToRefresh();
+        this.setupPinchToZoom();
+    }
+
+    bindTouchEvents() {
+        // Swipe gestures for navigation
+        document.addEventListener('touchstart', (e) => {
+            this.handleTouchStart(e);
+        }, { passive: false });
+
+        document.addEventListener('touchmove', (e) => {
+            this.handleTouchMove(e);
+        }, { passive: false });
+
+        document.addEventListener('touchend', (e) => {
+            this.handleTouchEnd(e);
+        }, { passive: false });
+    }
+
+    handleTouchStart(e) {
+        this.touchStartX = e.touches[0].clientX;
+        this.touchStartY = e.touches[0].clientY;
+        this.isSwipeInProgress = true;
+    }
+
+    handleTouchMove(e) {
+        if (!this.isSwipeInProgress) return;
+
+        this.touchEndX = e.touches[0].clientX;
+        this.touchEndY = e.touches[0].clientY;
+
+        // Handle pull-to-refresh
+        if (this.isPulling && window.scrollY === 0) {
+            e.preventDefault();
+            this.pullDistance = Math.max(0, this.touchEndY - this.touchStartY);
+            this.updatePullRefresh(this.pullDistance);
+        }
+
+        // Prevent default scrolling during horizontal swipe
+        const deltaX = Math.abs(this.touchEndX - this.touchStartX);
+        const deltaY = Math.abs(this.touchEndY - this.touchStartY);
+
+        if (deltaX > deltaY && deltaX > 50) {
+            e.preventDefault();
+        }
+    }
+
+    handleTouchEnd(e) {
+        if (!this.isSwipeInProgress) return;
+
+        const deltaX = this.touchEndX - this.touchStartX;
+        const deltaY = this.touchEndY - this.touchStartY;
+        const absDeltaX = Math.abs(deltaX);
+        const absDeltaY = Math.abs(deltaY);
+
+        // Handle swipe gestures
+        if (absDeltaX > 100 && absDeltaX > absDeltaY) {
+            this.handleSwipe(deltaX > 0 ? 'right' : 'left');
+        }
+
+        // Handle pull-to-refresh release
+        if (this.isPulling && this.pullDistance > 100) {
+            this.triggerPullRefresh();
+        } else if (this.isPulling) {
+            this.resetPullRefresh();
+        }
+
+        this.resetTouch();
+    }
+
+    handleSwipe(direction) {
+        // Navigate between sections
+        const sections = ['hero', 'features', 'journey', 'gallery', 'download'];
+        const currentSection = this.getCurrentSection();
+
+        let nextSectionIndex;
+        if (direction === 'left') {
+            nextSectionIndex = Math.min(sections.length - 1, sections.indexOf(currentSection) + 1);
+        } else {
+            nextSectionIndex = Math.max(0, sections.indexOf(currentSection) - 1);
+        }
+
+        const nextSection = sections[nextSectionIndex];
+        if (nextSection && nextSection !== currentSection) {
+            this.navigateToSection(nextSection);
+        }
+    }
+
+    getCurrentSection() {
+        const sections = document.querySelectorAll('section[id]');
+        const scrollY = window.scrollY + window.innerHeight / 2;
+
+        for (let section of sections) {
+            const rect = section.getBoundingClientRect();
+            const sectionTop = rect.top + window.scrollY;
+            const sectionBottom = sectionTop + rect.height;
+
+            if (scrollY >= sectionTop && scrollY < sectionBottom) {
+                return section.id;
+            }
+        }
+        return 'hero';
+    }
+
+    navigateToSection(sectionId) {
+        const section = document.getElementById(sectionId);
+        if (section) {
+            if (lenis) {
+                lenis.scrollTo(section);
+            } else {
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            // Announce navigation to screen readers
+            this.announceNavigation(sectionId);
+        }
+    }
+
+    announceNavigation(sectionId) {
+        const sectionNames = {
+            'hero': 'الصفحة الرئيسية',
+            'features': 'المميزات',
+            'journey': 'الرحلة',
+            'gallery': 'المعرض',
+            'download': 'التحميل'
+        };
+
+        const message = `تم الانتقال إلى قسم ${sectionNames[sectionId] || sectionId}`;
+        announceToScreenReader(message);
+    }
+
+    setupPullToRefresh() {
+        this.pullRefreshElement = document.createElement('div');
+        this.pullRefreshElement.className = 'pull-refresh-indicator';
+        this.pullRefreshElement.innerHTML = `
+            <div class="pull-refresh-spinner">
+                <div class="rub-el-hizb">
+                    <div class="square square-1"></div>
+                    <div class="square square-2"></div>
+                </div>
+            </div>
+            <div class="pull-refresh-text">اسحب للتحديث</div>
+        `;
+        document.body.appendChild(this.pullRefreshElement);
+
+        // Detect when user starts pulling from top
+        let startY = 0;
+        document.addEventListener('touchstart', (e) => {
+            if (window.scrollY === 0) {
+                startY = e.touches[0].clientY;
+                this.isPulling = true;
+            }
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (this.isPulling && window.scrollY === 0) {
+                const currentY = e.touches[0].clientY;
+                this.pullDistance = Math.max(0, currentY - startY);
+                this.updatePullRefresh(this.pullDistance);
+            }
+        });
+
+        document.addEventListener('touchend', () => {
+            if (this.isPulling) {
+                if (this.pullDistance > 100) {
+                    this.triggerPullRefresh();
+                } else {
+                    this.resetPullRefresh();
+                }
+            }
+            this.isPulling = false;
+            this.pullDistance = 0;
+        });
+    }
+
+    updatePullRefresh(distance) {
+        const progress = Math.min(distance / 100, 1);
+        const opacity = Math.min(progress, 0.8);
+        const scale = 0.5 + progress * 0.5;
+
+        this.pullRefreshElement.style.transform = `translateY(${distance * 0.5}px)`;
+        this.pullRefreshElement.style.opacity = opacity;
+
+        const spinner = this.pullRefreshElement.querySelector('.pull-refresh-spinner');
+        spinner.style.transform = `scale(${scale}) rotate(${progress * 360}deg)`;
+
+        const text = this.pullRefreshElement.querySelector('.pull-refresh-text');
+        if (progress >= 1) {
+            text.textContent = 'اترك للتحديث';
+        } else {
+            text.textContent = 'اسحب للتحديث';
+        }
+    }
+
+    triggerPullRefresh() {
+        // Show loading state
+        const text = this.pullRefreshElement.querySelector('.pull-refresh-text');
+        text.textContent = 'جاري التحديث...';
+
+        // Simulate refresh (replace with actual refresh logic)
+        setTimeout(() => {
+            this.resetPullRefresh();
+            // Trigger page reload or data refresh
+            window.location.reload();
+        }, 1500);
+    }
+
+    resetPullRefresh() {
+        this.pullRefreshElement.style.transform = 'translateY(-100px)';
+        this.pullRefreshElement.style.opacity = '0';
+
+        setTimeout(() => {
+            const text = this.pullRefreshElement.querySelector('.pull-refresh-text');
+            text.textContent = 'اسحب للتحديث';
+        }, 300);
+    }
+
+    setupPinchToZoom() {
+        let initialDistance = 0;
+        let currentScale = 1;
+        let isPinching = false;
+
+        document.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                initialDistance = this.getTouchDistance(e.touches[0], e.touches[1]);
+                isPinching = true;
+            }
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (isPinching && e.touches.length === 2) {
+                e.preventDefault();
+                const currentDistance = this.getTouchDistance(e.touches[0], e.touches[1]);
+                const scale = currentDistance / initialDistance;
+
+                // Apply zoom to images in viewport
+                this.applyPinchZoom(scale);
+            }
+        });
+
+        document.addEventListener('touchend', (e) => {
+            if (e.touches.length < 2) {
+                isPinching = false;
+                currentScale = 1;
+                this.resetPinchZoom();
+            }
+        });
+    }
+
+    getTouchDistance(touch1, touch2) {
+        const dx = touch1.clientX - touch2.clientX;
+        const dy = touch1.clientY - touch2.clientY;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    applyPinchZoom(scale) {
+        const images = document.querySelectorAll('img[data-pinch-zoom]');
+        images.forEach(img => {
+            const rect = img.getBoundingClientRect();
+            const isInViewport = rect.top < window.innerHeight && rect.bottom > 0;
+
+            if (isInViewport) {
+                img.style.transform = `scale(${scale})`;
+                img.style.transition = 'transform 0.1s ease';
+            }
+        });
+    }
+
+    resetPinchZoom() {
+        const images = document.querySelectorAll('img[data-pinch-zoom]');
+        images.forEach(img => {
+            img.style.transform = 'scale(1)';
+        });
+    }
+
+    resetTouch() {
+        this.touchStartX = null;
+        this.touchStartY = null;
+        this.touchEndX = null;
+        this.touchEndY = null;
+        this.isSwipeInProgress = false;
+    }
+}
+
+// Initialize gesture support
+new GestureSupport();

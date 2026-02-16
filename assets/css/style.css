@@ -2137,3 +2137,111 @@ section.visible {
     transform: scale(1.1) rotate(5deg);
     filter: drop-shadow(0 5px 10px rgba(10, 92, 62, 0.3));
 }
+
+/* Advanced Gesture Support */
+.pull-refresh-indicator {
+    position: fixed;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    transition: all 0.3s ease;
+    opacity: 0;
+}
+
+.pull-refresh-spinner {
+    width: 40px;
+    height: 40px;
+    transition: transform 0.3s ease;
+}
+
+.pull-refresh-text {
+    font-size: 14px;
+    color: var(--text-main);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+[data-theme="dark"] .pull-refresh-indicator {
+    background: var(--surface);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Pinch-to-zoom effects */
+img[data-pinch-zoom] {
+    transition: transform 0.1s ease;
+    cursor: zoom-in;
+}
+
+img[data-pinch-zoom].zoomed {
+    cursor: zoom-out;
+    z-index: 100;
+    position: relative;
+}
+
+/* Swipe gesture feedback */
+.swipe-indicator {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--primary);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.swipe-indicator.left {
+    right: 20px;
+    animation: swipeLeft 0.5s ease-out;
+}
+
+.swipe-indicator.right {
+    left: 20px;
+    animation: swipeRight 0.5s ease-out;
+}
+
+@keyframes swipeLeft {
+    0% {
+        transform: translateY(-50%) translateX(100px);
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-50%) translateX(0);
+        opacity: 0;
+    }
+}
+
+@keyframes swipeRight {
+    0% {
+        transform: translateY(-50%) translateX(-100px);
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-50%) translateX(0);
+        opacity: 0;
+    }
+}
