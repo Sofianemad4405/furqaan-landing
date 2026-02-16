@@ -411,3 +411,227 @@ if (themeToggle) {
         }
     });
 }
+
+// Animated Text Reveals and Typewriter Effects
+class TextReveal {
+    constructor(element, options = {}) {
+        this.element = element;
+        this.options = {
+            delay: options.delay || 0,
+            duration: options.duration || 1000,
+            type: options.type || 'reveal', // 'reveal' or 'typewriter'
+            text: options.text || element.textContent,
+            ...options
+        };
+        this.init();
+    }
+
+    init() {
+        if (this.options.type === 'typewriter') {
+            this.setupTypewriter();
+        } else {
+            this.setupReveal();
+        }
+    }
+
+    setupReveal() {
+        this.element.style.opacity = '0';
+        this.element.style.transform = 'translateY(30px)';
+        this.element.style.transition = `all ${this.options.duration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
+
+        setTimeout(() => {
+            this.element.style.opacity = '1';
+            this.element.style.transform = 'translateY(0)';
+        }, this.options.delay);
+    }
+
+    setupTypewriter() {
+        this.element.textContent = '';
+        this.element.style.borderRight = '2px solid var(--primary)';
+        this.element.style.whiteSpace = 'nowrap';
+        this.element.style.overflow = 'hidden';
+
+        let i = 0;
+        const typeWriter = () => {
+            if (i < this.options.text.length) {
+                this.element.textContent += this.options.text.charAt(i);
+                i++;
+                setTimeout(typeWriter, 50);
+            } else {
+                this.element.style.borderRight = 'none';
+            }
+        };
+
+        setTimeout(typeWriter, this.options.delay);
+    }
+}
+
+// Initialize text animations
+document.addEventListener('DOMContentLoaded', () => {
+    // Typewriter effect for hero title
+    const heroTitle = document.querySelector('.hero h1');
+    if (heroTitle) {
+        const typewriterText = heroTitle.getAttribute('data-typewriter') || heroTitle.textContent;
+        new TextReveal(heroTitle, {
+            type: 'typewriter',
+            delay: 500,
+            text: typewriterText
+        });
+    }
+
+    // Reveal animations for other text elements
+    const heroParagraph = document.querySelector('.hero p');
+    if (heroParagraph) {
+        new TextReveal(heroParagraph, { delay: 2000, duration: 800 });
+    }
+
+    const sectionHeaders = document.querySelectorAll('.section-header h2');
+    sectionHeaders.forEach((header, index) => {
+        new TextReveal(header, { delay: 200 + (index * 200), duration: 600 });
+    });
+
+    const featureTitles = document.querySelectorAll('.feature-card h3');
+    featureTitles.forEach((title, index) => {
+        new TextReveal(title, { delay: 300 + (index * 100), duration: 500 });
+    });
+});
+
+// Responsive Font Scaling
+class ResponsiveTypography {
+    constructor() {
+        this.init();
+        this.bindEvents();
+    }
+
+    init() {
+        this.updateFontSizes();
+    }
+
+    bindEvents() {
+        window.addEventListener('resize', () => {
+            this.debounce(this.updateFontSizes.bind(this), 250);
+        });
+    }
+
+    updateFontSizes() {
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+
+        // Calculate responsive font scale based on viewport
+        const scale = Math.min(viewportWidth / 1920, viewportHeight / 1080, 1);
+
+        document.documentElement.style.setProperty('--font-scale', scale);
+
+        // Update specific elements
+        this.updateHeroTypography(scale);
+        this.updateSectionTypography(scale);
+    }
+
+    updateHeroTypography(scale) {
+        const heroTitle = document.querySelector('.hero h1');
+        if (heroTitle) {
+            const baseSize = 4; // rem
+            const scaledSize = Math.max(baseSize * scale, 2.5); // Minimum 2.5rem
+            heroTitle.style.fontSize = `${scaledSize}rem`;
+        }
+
+        const heroParagraph = document.querySelector('.hero p');
+        if (heroParagraph) {
+            const baseSize = 1.35; // rem
+            const scaledSize = Math.max(baseSize * scale, 1); // Minimum 1rem
+            heroParagraph.style.fontSize = `${scaledSize}rem`;
+        }
+    }
+
+    updateSectionTypography(scale) {
+        const sectionTitles = document.querySelectorAll('.section-header h2');
+        sectionTitles.forEach(title => {
+            const baseSize = 3; // rem
+            const scaledSize = Math.max(baseSize * scale, 2); // Minimum 2rem
+            title.style.fontSize = `${scaledSize}rem`;
+        });
+    }
+
+    debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+}
+
+// Initialize responsive typography
+new ResponsiveTypography();
+
+// Text Shadow Effects for Depth
+class TextShadowEffects {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        this.addTextShadows();
+        this.bindScrollEffects();
+    }
+
+    addTextShadows() {
+        // Add depth to hero title
+        const heroTitle = document.querySelector('.hero h1');
+        if (heroTitle) {
+            heroTitle.style.textShadow = `
+                0 2px 4px rgba(10, 92, 62, 0.1),
+                0 4px 8px rgba(10, 92, 62, 0.05),
+                0 8px 16px rgba(10, 92, 62, 0.03)
+            `;
+        }
+
+        // Add subtle shadows to section headers
+        const sectionHeaders = document.querySelectorAll('.section-header h2');
+        sectionHeaders.forEach(header => {
+            header.style.textShadow = `
+                0 1px 2px rgba(10, 92, 62, 0.1),
+                0 2px 4px rgba(10, 92, 62, 0.05)
+            `;
+        });
+
+        // Add glow effect to feature titles on hover
+        const featureTitles = document.querySelectorAll('.feature-card h3');
+        featureTitles.forEach(title => {
+            title.addEventListener('mouseenter', () => {
+                title.style.textShadow = `
+                    0 0 10px rgba(212, 175, 55, 0.3),
+                    0 0 20px rgba(212, 175, 55, 0.2),
+                    0 0 30px rgba(212, 175, 55, 0.1)
+                `;
+            });
+
+            title.addEventListener('mouseleave', () => {
+                title.style.textShadow = 'none';
+            });
+        });
+    }
+
+    bindScrollEffects() {
+        window.addEventListener('scroll', () => {
+            this.updateScrollShadows();
+        });
+    }
+
+    updateScrollShadows() {
+        const scrolled = window.pageYOffset;
+        const rate = scrolled * -0.5;
+
+        const heroTitle = document.querySelector('.hero h1');
+        if (heroTitle) {
+            heroTitle.style.transform = `translateY(${rate * 0.1}px)`;
+        }
+    }
+}
+
+// Initialize text shadow effects
+new TextShadowEffects();
