@@ -483,13 +483,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Responsive Font Scaling - disabled, using CSS clamp() instead
-class ResponsiveTypography {
-    constructor() {
-        // No-op: CSS clamp() handles responsive sizing now
-    }
-}
-new ResponsiveTypography();
+// Responsive Font Scaling - handled by CSS clamp()
 
 // Text Shadow Effects for Depth - desktop only
 class TextShadowEffects {
@@ -565,17 +559,6 @@ class SectionTransitions {
 
 // Initialize section transitions
 new SectionTransitions();
-
-// Skeleton Loading - disabled (was destroying feature card content)
-// Progressive image loading is handled by native loading="lazy" attribute
-class SkeletonLoader {
-    constructor() {
-        // No-op: removed because it was replacing feature card HTML with skeletons
-        // and never restoring the original content
-    }
-}
-
-new SkeletonLoader();
 
 // Progressive Image Loading with Blur-to-Sharp Transitions
 class ProgressiveImageLoader {
@@ -738,7 +721,7 @@ class ParallaxEffects {
                 });
                 ticking = true;
             }
-        });
+        }, { passive: true });
     }
 
     updateParallax() {
@@ -829,7 +812,7 @@ class ScrollAnimations {
                 });
                 ticking = true;
             }
-        });
+        }, { passive: true });
     }
 
     updateAnimations() {
@@ -1285,31 +1268,8 @@ class LiquidButtons {
     }
 }
 
-// Advanced Hover States - desktop only
-class AdvancedHoverStates {
-    constructor() {
-        if (isMobile) return; // No hover on mobile
-    }
-}
-
-// Initialize morphing and advanced effects
+// Initialize morphing and effects - desktop only
 if (!isMobile) {
     new MorphingElements();
     new LiquidButtons();
 }
-new AdvancedHoverStates();
-
-// Gesture Support - simplified, non-blocking
-// Removed: pull-to-refresh (reloads page unexpectedly), horizontal swipe navigation
-// (blocks normal scrolling), pinch-to-zoom on all images (conflicts with native zoom)
-// Kept: basic touch feedback only
-
-class GestureSupport {
-    constructor() {
-        // No-op: removed gesture handlers that were blocking normal mobile scrolling
-        // Native browser gestures work correctly now
-    }
-}
-
-// Initialize gesture support
-new GestureSupport();
