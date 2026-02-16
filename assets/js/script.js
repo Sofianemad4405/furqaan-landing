@@ -1060,3 +1060,133 @@ class ScrollProgressBar {
 
 // Initialize scroll progress bar
 new ScrollProgressBar();
+
+// Advanced Scroll-Triggered Animations
+class ScrollAnimations {
+    constructor() {
+        this.elements = [];
+        this.init();
+    }
+
+    init() {
+        this.findAnimatableElements();
+        this.bindScrollEvents();
+        this.updateAnimations();
+    }
+
+    findAnimatableElements() {
+        // Find elements with data attributes for scroll animations
+        this.elements = document.querySelectorAll('[data-scroll-animate]');
+    }
+
+    bindScrollEvents() {
+        window.addEventListener('scroll', () => {
+            this.updateAnimations();
+        });
+
+        window.addEventListener('resize', () => {
+            this.updateAnimations();
+        });
+    }
+
+    updateAnimations() {
+        const scrolled = window.pageYOffset;
+        const windowHeight = window.innerHeight;
+        const documentHeight = document.documentElement.scrollHeight;
+
+        // Update text color/size based on scroll
+        this.updateTextAnimations(scrolled, documentHeight);
+
+        // Update background gradients
+        this.updateBackgroundGradients(scrolled, documentHeight);
+
+        // Update element transformations
+        this.updateElementTransformations(scrolled, windowHeight);
+    }
+
+    updateTextAnimations(scrolled, documentHeight) {
+        const scrollProgress = scrolled / (documentHeight - window.innerHeight);
+
+        // Hero title color shift
+        const heroTitle = document.querySelector('.hero h1');
+        if (heroTitle) {
+            const hue = 120 + (scrollProgress * 60); // Green to yellow shift
+            heroTitle.style.background = `linear-gradient(135deg, hsl(${hue}, 70%, 50%), hsl(${hue + 30}, 70%, 45%))`;
+            heroTitle.style.backgroundClip = 'text';
+            heroTitle.style.webkitBackgroundClip = 'text';
+        }
+
+        // Section titles size animation
+        const sectionTitles = document.querySelectorAll('.section-header h2');
+        sectionTitles.forEach((title, index) => {
+            const titleRect = title.getBoundingClientRect();
+            const titleCenter = titleRect.top + titleRect.height / 2;
+            const distanceFromCenter = Math.abs(window.innerHeight / 2 - titleCenter);
+            const scale = Math.max(0.8, 1 - distanceFromCenter / (window.innerHeight / 2) * 0.2);
+            title.style.transform = `scale(${scale})`;
+        });
+    }
+
+    updateBackgroundGradients(scrolled, documentHeight) {
+        const scrollProgress = scrolled / (documentHeight - window.innerHeight);
+
+        // Dynamic hero background
+        const hero = document.querySelector('.hero');
+        if (hero) {
+            const hue1 = 120 + (scrollProgress * 30);
+            const hue2 = 200 + (scrollProgress * 20);
+            hero.style.background = `
+                linear-gradient(135deg,
+                    rgba(${Math.floor(hue1 * 0.5)}, ${Math.floor(hue1 * 0.3)}, ${Math.floor(hue1 * 0.2)}, 0.05) 0%,
+                    rgba(${Math.floor(hue2 * 0.3)}, ${Math.floor(hue2 * 0.4)}, ${Math.floor(hue2 * 0.6)}, 0.03) 100%
+                ),
+                var(--pattern-islamic-stars)
+            `;
+        }
+
+        // Dynamic body background
+        const body = document.body;
+        const opacity1 = 0.05 + (scrollProgress * 0.1);
+        const opacity2 = 0.05 + (scrollProgress * 0.05);
+        body.style.backgroundImage = `
+            radial-gradient(circle at 10% ${20 + scrollProgress * 30}%, rgba(212, 175, 55, ${opacity1}) 0%, transparent 20%),
+            radial-gradient(circle at 90% ${80 - scrollProgress * 20}%, rgba(10, 92, 62, ${opacity2}) 0%, transparent 20%)
+        `;
+    }
+
+    updateElementTransformations(scrolled, windowHeight) {
+        // Transform feature cards based on scroll position
+        const featureCards = document.querySelectorAll('.feature-card');
+        featureCards.forEach((card, index) => {
+            const cardRect = card.getBoundingClientRect();
+            const cardCenter = cardRect.top + cardRect.height / 2;
+            const distanceFromCenter = cardCenter - windowHeight / 2;
+            const rotation = distanceFromCenter * 0.02; // Subtle rotation
+            const scale = 1 - Math.abs(distanceFromCenter) / windowHeight * 0.1;
+
+            card.style.transform = `
+                translateY(${Math.sin(scrolled * 0.001 + index) * 10}px)
+                rotateX(${rotation}deg)
+                scale(${Math.max(0.9, scale)})
+            `;
+        });
+
+        // Transform phone mockup
+        const phoneMockup = document.querySelector('.phone-mockup');
+        if (phoneMockup) {
+            const phoneRect = phoneMockup.getBoundingClientRect();
+            const phoneCenter = phoneRect.top + phoneRect.height / 2;
+            const distanceFromCenter = phoneCenter - windowHeight / 2;
+            const tilt = distanceFromCenter * 0.005;
+
+            phoneMockup.style.transform = `
+                rotateY(${-10 + tilt}deg)
+                rotateX(${5 + tilt * 0.5}deg)
+                translateY(${scrolled * 0.1}px)
+            `;
+        }
+    }
+}
+
+// Initialize scroll animations
+new ScrollAnimations();

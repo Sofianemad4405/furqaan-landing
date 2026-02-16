@@ -1850,3 +1850,29 @@ section.visible {
         opacity: 0;
     }
 }
+
+/* Advanced Scroll-Triggered Animations */
+.scroll-animate {
+    transition: transform 0.1s ease-out, opacity 0.3s ease-out;
+    will-change: transform;
+}
+
+.scroll-text-scale {
+    transition: transform 0.2s ease-out;
+}
+
+.scroll-bg-dynamic {
+    transition: background 0.3s ease-out;
+}
+
+.scroll-rotate {
+    transition: transform 0.1s ease-out;
+}
+
+/* Preserve 3D transforms for better performance */
+.feature-card,
+.phone-mockup,
+.section-header h2 {
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+}
