@@ -55,11 +55,12 @@
                 الفرقان
             </a>
 
-            <div class="mobile-toggle" id="mobile-toggle">
+            <button class="mobile-toggle" id="mobile-toggle" type="button" aria-label="فتح القائمة"
+                aria-expanded="false" aria-controls="mobile-menu">
                 <span></span>
                 <span></span>
                 <span></span>
-            </div>
+            </button>
 
             <nav class="nav-links">
                 <a href="#features">المميزات</a>
@@ -76,7 +77,7 @@
             </div>
 
             <div class="nav-actions">
-                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Dark Mode">
+                <button id="theme-toggle" class="theme-toggle" aria-label="تبديل الوضع الليلي" aria-pressed="false">
                     <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
@@ -149,7 +150,6 @@
         </div>
     </section>
 
-    <!-- Download Section -->
     <!-- Download Section -->
     <section id="download" class="download-banner">
         <div class="blob download-blob-1"></div>
@@ -287,7 +287,7 @@
         </div>
     </footer>
 
-    <a id="back-to-top" href="#">
+    <a id="back-to-top" href="#" aria-label="العودة للأعلى">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M18 15l-6-6-6 6" />
